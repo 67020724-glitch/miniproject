@@ -164,6 +164,19 @@ export const translations = {
         addNote: 'บันทึกโน้ต',
         started: 'เริ่ม',
         finished: 'จบ',
+
+        // Edit Book Modal
+        editBookTitle: 'แก้ไขหนังสือ',
+        editBook: 'แก้ไข',
+        editDetails: 'รายละเอียด',
+        editCover: 'ปกหนังสือ',
+        editNotes: 'บันทึก',
+        noteLabel: 'บันทึกของคุณ',
+        notePlaceholder: 'เขียนความรู้สึก หรือสิ่งที่ได้เรียนรู้จากหนังสือเล่มนี้...',
+        characters: 'ตัวอักษร',
+        saveChanges: 'บันทึกการเปลี่ยนแปลง',
+        fileSizeLimit: 'ขนาดไฟล์ต้องไม่เกิน 5MB',
+        uploadFailed: 'การอัปโหลดรูปภาพล้มเหลว กรุณาลองใหม่อีกครั้ง',
     },
     en: {
         // Add Book Modal
@@ -196,6 +209,19 @@ export const translations = {
         addNote: 'Edit Note',
         started: 'Started',
         finished: 'Finished',
+
+        // Edit Book Modal
+        editBookTitle: 'Edit Book',
+        editBook: 'Edit',
+        editDetails: 'Details',
+        editCover: 'Cover',
+        editNotes: 'Notes',
+        noteLabel: 'Your Notes',
+        notePlaceholder: 'Write your thoughts or what you learned from this book...',
+        characters: 'characters',
+        saveChanges: 'Save Changes',
+        fileSizeLimit: 'File size must not exceed 5MB',
+        uploadFailed: 'Image upload failed. Please try again.',
 
         // Categories
         catFiction: 'Fiction',
