@@ -91,7 +91,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-64 md:w-60 bg-white border-r flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed inset-y-0 left-0 z-50 w-64 md:w-60 bg-white border-r flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-full ${isOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
                 style={{ backgroundColor: 'var(--sidebar-bg)', borderColor: 'var(--card-border)' }}
             >
