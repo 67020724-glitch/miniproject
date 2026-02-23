@@ -27,6 +27,7 @@
 - 🔑 **OAuth** — เข้าสู่ระบบผ่าน Google หรือ GitHub
 - 🔄 **ลืมรหัสผ่าน** — รีเซ็ตรหัสผ่านผ่านลิงก์ที่ส่งไปทางอีเมล
 - 🔒 **จดจำการเข้าสู่ระบบ** — Session ถูกจัดการผ่าน Supabase Auth
+- 👤 **โปรไฟล์ผู้ใช้** — จัดการข้อมูลส่วนตัว (ชื่อ, รูปโปรไฟล์)
 
 ### 🎯 ฟีเจอร์เพิ่มเติม
 - 📊 **สถานะการอ่าน** — ยังไม่ได้อ่าน / กำลังอ่าน / อ่านจบแล้ว
@@ -135,6 +136,7 @@ storynest/
 4. **ตั้งค่า Supabase**
    - สร้างตาราง `books` ใน Supabase Database
    - สร้าง Storage Bucket ชื่อ `book-covers` (ตั้งเป็น Public)
+   - สร้าง Storage Bucket ชื่อ `avatars` (ตั้งเป็น Public)
    - เปิดใช้งาน Authentication:
      - **Email/Password** — เปิดใช้งาน Email Provider
      - **Google OAuth** — ตั้งค่า Google OAuth Client ID/Secret
