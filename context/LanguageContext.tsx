@@ -121,6 +121,39 @@ export const translations = {
         getStarted: 'ลงทะเบียนใช้งาน',
         loginButton: 'เข้าสู่ระบบ',
 
+        // Forgot Password
+        forgotPassword: 'ลืมรหัสผ่าน?',
+        forgotPasswordTitle: 'ลืมรหัสผ่าน',
+        forgotPasswordSubtitle: 'กรอกอีเมลของคุณ เราจะส่งลิงก์รีเซ็ตรหัสผ่านไปให้',
+        forgotPasswordError: 'ไม่สามารถส่งอีเมลรีเซ็ตรหัสผ่านได้',
+        sendResetLink: 'ส่งลิงก์รีเซ็ตรหัสผ่าน',
+        resetEmailSent: 'ส่งอีเมลเรียบร้อยแล้ว!',
+        resetEmailSentMessage: 'กรุณาตรวจสอบอีเมลของคุณเพื่อดำเนินการรีเซ็ตรหัสผ่าน',
+        checkSpamFolder: 'หากไม่พบอีเมล กรุณาตรวจสอบโฟลเดอร์ Spam/Junk',
+        backToLogin: 'กลับไปหน้าเข้าสู่ระบบ',
+        rateLimitError: 'กรุณารอสักครู่แล้วลองใหม่อีกครั้ง',
+
+        // Reset Password Page
+        setNewPassword: 'ตั้งรหัสผ่านใหม่',
+        setNewPasswordSubtitle: 'กรอกรหัสผ่านใหม่ของคุณด้านล่าง',
+        newPasswordLabel: 'รหัสผ่านใหม่',
+        confirmNewPasswordLabel: 'ยืนยันรหัสผ่านใหม่',
+        resetPasswordButton: 'รีเซ็ตรหัสผ่าน',
+        resetPasswordError: 'ไม่สามารถรีเซ็ตรหัสผ่านได้',
+        passwordResetSuccess: 'รีเซ็ตรหัสผ่านสำเร็จ!',
+        redirectingHome: 'กำลังนำคุณกลับไปหน้าหลัก...',
+        verifyingLink: 'กำลังตรวจสอบลิงก์...',
+        passwordMinLength: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+        passwordMismatch: 'รหัสผ่านไม่ตรงกัน',
+        backToHome: 'กลับหน้าหลัก',
+
+        // Social Login
+        continueWithGoogle: 'เข้าสู่ระบบด้วย Google',
+        continueWithApple: 'เข้าสู่ระบบด้วย Apple',
+        continueWithGithub: 'เข้าสู่ระบบด้วย GitHub',
+        orContinueWith: 'หรือเข้าสู่ระบบด้วยอีเมล',
+        oauthError: 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่',
+
         // Profile
         profile: 'โปรไฟล์',
         guest: 'ผู้เยี่ยมชม',
@@ -345,6 +378,39 @@ export const translations = {
         systemDescription: 'Personal Book Management System',
         getStarted: 'Get Started',
         loginButton: 'Login',
+
+        // Forgot Password
+        forgotPassword: 'Forgot password?',
+        forgotPasswordTitle: 'Forgot Password',
+        forgotPasswordSubtitle: 'Enter your email and we\'ll send you a reset link',
+        forgotPasswordError: 'Could not send password reset email',
+        sendResetLink: 'Send Reset Link',
+        resetEmailSent: 'Email Sent!',
+        resetEmailSentMessage: 'Please check your email to continue with the password reset',
+        checkSpamFolder: 'If you don\'t see the email, check your Spam/Junk folder',
+        backToLogin: 'Back to Login',
+        rateLimitError: 'Please wait a moment and try again',
+
+        // Reset Password Page
+        setNewPassword: 'Set New Password',
+        setNewPasswordSubtitle: 'Enter your new password below',
+        newPasswordLabel: 'New Password',
+        confirmNewPasswordLabel: 'Confirm New Password',
+        resetPasswordButton: 'Reset Password',
+        resetPasswordError: 'Could not reset password',
+        passwordResetSuccess: 'Password Reset Successful!',
+        redirectingHome: 'Redirecting you to the home page...',
+        verifyingLink: 'Verifying link...',
+        passwordMinLength: 'Password must be at least 6 characters',
+        passwordMismatch: 'Passwords do not match',
+        backToHome: 'Back to Home',
+
+        // Social Login
+        continueWithGoogle: 'Continue with Google',
+        continueWithApple: 'Continue with Apple',
+        continueWithGithub: 'Continue with GitHub',
+        orContinueWith: 'or continue with email',
+        oauthError: 'Could not sign in. Please try again.',
 
         // Profile
         profile: 'Profile',
