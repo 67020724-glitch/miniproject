@@ -285,6 +285,7 @@ export function BookProvider({ children }: { children: ReactNode }) {
             if (updates.isFavorite !== undefined) updateData.is_favorite = updates.isFavorite;
             if (updates.rating !== undefined) updateData.rating = updates.rating;
             if (updates.note !== undefined) updateData.note = updates.note;
+            if (updates.category !== undefined) updateData.category = updates.category;
 
             const { error } = await supabase
                 .from('books')
