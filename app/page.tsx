@@ -25,7 +25,7 @@ export default function HomePage() {
   const [selectedAuthor, setSelectedAuthor] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filterType, setFilterType] = useState<'author' | 'category'>('author');
-  const booksPerPage = 10;
+  const booksPerPage = 12;
 
   // Get unique categories
   const categories = Array.from(new Set(books.map(b => b.category).filter(Boolean))) as string[];

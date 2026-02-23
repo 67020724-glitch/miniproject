@@ -21,6 +21,7 @@ interface AuthContextType {
     logout: () => void;
     forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
     signInWithProvider: (provider: OAuthProvider) => Promise<{ success: boolean; error?: string }>;
+    updateProfile: (updates: { name?: string; avatar_url?: string }) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -134,6 +135,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const updateProfile = async (updates: { name?: string; avatar_url?: string }): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const { data, error } = await supabase.auth.updateUser({
+                data: updates
+            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                setUser(extractUser(data.user));
+            }
+
+            return { success: true };
+        } catch (error: any) {
+            console.error('Update profile error:', error);
+            return { success: false, error: error.message || 'เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์' };
+        }
+    };
+
     const logout = async () => {
         try {
             await supabase.auth.signOut();
@@ -154,6 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 logout,
                 forgotPassword,
                 signInWithProvider,
+                updateProfile,
             }}
         >
             {children}
