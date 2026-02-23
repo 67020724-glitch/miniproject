@@ -220,3 +220,23 @@
 .dark .bg-green-100.text-green-600 {
   background-color: rgba(34, 197, 94, 0.2) !important;
 }
+
+/* Handle Autofill colors to match theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Standard transitions */
+input, select, textarea, button {
+  transition: all 0.2s ease;
+}
