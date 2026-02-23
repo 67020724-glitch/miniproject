@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
@@ -10,8 +11,23 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { isLoggedIn, isLoading } = useAuth();
 
-    // Always show full layout with sidebar and topbar
+    // While loading auth state, show a clean background
+    if (isLoading) {
+        return <div className="h-screen w-full" style={{ backgroundColor: 'var(--background)' }}></div>;
+    }
+
+    // If not logged in, show only the main content (WelcomePage/Auth)
+    // without sidebar and topbar for a full-screen experience
+    if (!isLoggedIn) {
+        return (
+            <div className="min-h-screen w-full overflow-y-auto" style={{ backgroundColor: 'var(--background)' }}>
+                {children}
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--background)' }}>
             {/* Sidebar - stays fixed */}
