@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import BookCard from '@/components/BookCard';
 import AddBookModal from '@/components/AddBookModal';
+import EditBookModal from '@/components/EditBookModal';
 import NoteModal from '@/components/NoteModal';
 import WelcomePage from '@/components/WelcomePage';
 import { Book } from '@/types/book';
@@ -15,6 +16,8 @@ export default function HomePage() {
   const { isLoggedIn, isLoading } = useAuth();
   const { t } = useLanguage();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedBookForNote, setSelectedBookForNote] = useState<Book | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -199,6 +202,10 @@ export default function HomePage() {
                 setSelectedBookForNote(book);
                 setIsNoteModalOpen(true);
               }}
+              onEdit={(book) => {
+                setSelectedBookForEdit(book);
+                setIsEditModalOpen(true);
+              }}
               onFavorite={toggleFavorite}
             />
           ))}
@@ -226,6 +233,16 @@ export default function HomePage() {
 
       {/* Add Book Modal */}
       <AddBookModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+
+      {/* Edit Book Modal */}
+      <EditBookModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedBookForEdit(null);
+        }}
+        book={selectedBookForEdit}
+      />
 
       {/* Note Modal */}
       <NoteModal
