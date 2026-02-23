@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useBooks } from '@/context/BookContext';
 import { useLanguage } from '@/context/LanguageContext';
 import BookCard from '@/components/BookCard';
-import { BookStatus } from '@/types/book';
+import EditBookModal from '@/components/EditBookModal';
+import NoteModal from '@/components/NoteModal';
+import { Book, BookStatus } from '@/types/book';
 
 type TabType = 'all' | BookStatus;
 
@@ -18,9 +20,13 @@ const tabKeys: { key: TabType; labelKey: TabKey }[] = [
 ];
 
 export default function StatusPage() {
-    const { books, getBooksByStatus, deleteBook, updateBook } = useBooks();
+    const { books, getBooksByStatus, deleteBook, updateBook, toggleFavorite } = useBooks();
     const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState<TabType>('all');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [selectedBookForNote, setSelectedBookForNote] = useState<Book | null>(null);
 
     const filteredBooks = activeTab === 'all' ? books : getBooksByStatus(activeTab);
 
@@ -59,6 +65,16 @@ export default function StatusPage() {
                             showYear={true}
                             onDelete={deleteBook}
                             onStatusChange={(id, status) => updateBook(id, { status })}
+                            onRatingChange={(id, rating) => updateBook(id, { rating })}
+                            onEditNote={(book) => {
+                                setSelectedBookForNote(book);
+                                setIsNoteModalOpen(true);
+                            }}
+                            onEdit={(book) => {
+                                setSelectedBookForEdit(book);
+                                setIsEditModalOpen(true);
+                            }}
+                            onFavorite={toggleFavorite}
                         />
                     ))}
                 </div>
@@ -73,7 +89,26 @@ export default function StatusPage() {
                     <p style={{ color: 'var(--text-muted)' }}>{t('noBooksInCategory')}</p>
                 </div>
             )}
+
+            {/* Edit Book Modal */}
+            <EditBookModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedBookForEdit(null);
+                }}
+                book={selectedBookForEdit}
+            />
+
+            {/* Note Modal */}
+            <NoteModal
+                isOpen={isNoteModalOpen}
+                onClose={() => {
+                    setIsNoteModalOpen(false);
+                    setSelectedBookForNote(null);
+                }}
+                book={selectedBookForNote}
+            />
         </div>
     );
 }
-
