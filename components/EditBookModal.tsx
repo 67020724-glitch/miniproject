@@ -74,7 +74,6 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
     const [status, setStatus] = useState<BookStatus>('unread');
     const [rating, setRating] = useState(0);
     const [note, setNote] = useState('');
-    const [activeTab, setActiveTab] = useState<'details' | 'cover' | 'notes'>('details');
 
     // Populate form when book changes
     useEffect(() => {
@@ -88,7 +87,6 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             setStatus(book.status || 'unread');
             setRating(book.rating || 0);
             setNote(book.note || '');
-            setActiveTab('details');
         }
     }, [book, isOpen]);
 
@@ -155,7 +153,6 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         setIsUploading(true);
         let finalCoverUrl = coverUrl || book.coverUrl;
 
-        // If file is selected, upload it
         if (coverFile) {
             const uploadedUrl = await uploadImage(coverFile);
             if (uploadedUrl) {
@@ -184,17 +181,11 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
     if (!isOpen || !book) return null;
 
-    const tabs = [
-        { id: 'details' as const, label: t('editDetails'), icon: '📝' },
-        { id: 'cover' as const, label: t('editCover'), icon: '🖼️' },
-        { id: 'notes' as const, label: t('editNotes'), icon: '📒' },
-    ];
-
     return (
         <div className="relative z-50" aria-labelledby="edit-modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+                className="fixed inset-0 bg-black/50 transition-opacity"
                 onClick={onClose}
             />
 
@@ -202,268 +193,193 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div
-                        className="relative transform bg-white dark:bg-gray-800 rounded-2xl text-left shadow-xl transition-all w-full max-w-lg my-8 overflow-hidden"
+                        className="relative transform bg-white rounded-2xl text-left shadow-xl transition-all w-full max-w-md my-8 p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
-                        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
-                            <div className="flex items-center justify-between">
-                                <h2 id="edit-modal-title" className="text-xl font-semibold text-white flex items-center gap-2">
-                                    ✏️ {t('editBookTitle')}
-                                </h2>
-                                <button
-                                    onClick={onClose}
-                                    className="text-white/80 hover:text-white transition-colors rounded-full w-8 h-8 flex items-center justify-center hover:bg-white/20"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+                        <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('editBookTitle')}</h2>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Title */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('titleLabel')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    placeholder={t('titlePlaceholder')}
+                                    required
+                                />
                             </div>
 
-                            {/* Book title preview */}
-                            <p className="text-white/70 text-sm mt-1 truncate">
-                                {book.title}
-                            </p>
-                        </div>
+                            {/* Author */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('authorLabel')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={author}
+                                    onChange={(e) => setAuthor(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    placeholder={t('authorPlaceholder')}
+                                />
+                            </div>
 
-                        {/* Tabs */}
-                        <div className="flex border-b border-gray-200 dark:border-gray-700">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    type="button"
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex-1 py-3 px-4 text-sm font-medium transition-colors flex items-center justify-center gap-1.5
-                                        ${activeTab === tab.id
-                                            ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20'
-                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                                        }`}
-                                >
-                                    <span>{tab.icon}</span>
-                                    <span className="hidden sm:inline">{tab.label}</span>
-                                </button>
-                            ))}
-                        </div>
+                            {/* Category */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('categoryLabel')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={category}
+                                    onChange={(e) => setCategory(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    placeholder={t('categoryPlaceholder')}
+                                    list="edit-categories"
+                                />
+                                <datalist id="edit-categories">
+                                    <option value={t('catFiction')} />
+                                    <option value={t('catSelfHelp')} />
+                                    <option value={t('catBusiness')} />
+                                    <option value={t('catTechnology')} />
+                                    <option value={t('catHistory')} />
+                                    <option value={t('catFinance')} />
+                                    <option value={t('catPsychology')} />
+                                </datalist>
+                            </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit}>
-                            <div className="px-6 py-5 space-y-4 max-h-[60vh] overflow-y-auto">
+                            {/* Rating */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('ratingLabel')}
+                                </label>
+                                <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            onClick={() => setRating(rating === star ? 0 : star)}
+                                            className={`w-8 h-8 transition-colors ${rating >= star ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+                                                <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                                {/* === Details Tab === */}
-                                {activeTab === 'details' && (
-                                    <>
-                                        {/* Title */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('titleLabel')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={title}
-                                                onChange={(e) => setTitle(e.target.value)}
-                                                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-shadow"
-                                                placeholder={t('titlePlaceholder')}
-                                                required
-                                            />
-                                        </div>
+                            {/* Cover Image Upload */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('coverLabel')}
+                                </label>
 
-                                        {/* Author */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('authorLabel')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={author}
-                                                onChange={(e) => setAuthor(e.target.value)}
-                                                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-shadow"
-                                                placeholder={t('authorPlaceholder')}
-                                            />
-                                        </div>
-
-                                        {/* Category */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('categoryLabel')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={category}
-                                                onChange={(e) => setCategory(e.target.value)}
-                                                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-shadow"
-                                                placeholder={t('categoryPlaceholder')}
-                                                list="edit-categories"
-                                            />
-                                            <datalist id="edit-categories">
-                                                <option value={t('catFiction')} />
-                                                <option value={t('catSelfHelp')} />
-                                                <option value={t('catBusiness')} />
-                                                <option value={t('catTechnology')} />
-                                                <option value={t('catHistory')} />
-                                                <option value={t('catFinance')} />
-                                                <option value={t('catPsychology')} />
-                                            </datalist>
-                                        </div>
-
-                                        {/* Status */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('statusLabel')}
-                                            </label>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                {(['unread', 'reading', 'completed'] as BookStatus[]).map((s) => {
-                                                    const statusConfig = {
-                                                        unread: { icon: '📕', color: 'orange', label: t('unread') },
-                                                        reading: { icon: '📖', color: 'blue', label: t('reading') },
-                                                        completed: { icon: '✅', color: 'green', label: t('completed') },
-                                                    };
-                                                    const config = statusConfig[s];
-                                                    const isSelected = status === s;
-
-                                                    return (
-                                                        <button
-                                                            key={s}
-                                                            type="button"
-                                                            onClick={() => setStatus(s)}
-                                                            className={`py-2.5 px-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-1.5 border-2 ${isSelected
-                                                                ? s === 'unread'
-                                                                    ? 'border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-500 shadow-sm'
-                                                                    : s === 'reading'
-                                                                        ? 'border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-500 shadow-sm'
-                                                                        : 'border-green-400 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-500 shadow-sm'
-                                                                : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                                                }`}
-                                                        >
-                                                            <span>{config.icon}</span>
-                                                            <span>{config.label}</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        {/* Rating */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('ratingLabel')}
-                                            </label>
-                                            <div className="flex gap-1 items-center">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <button
-                                                        key={star}
-                                                        type="button"
-                                                        onClick={() => setRating(rating === star ? 0 : star)}
-                                                        className={`w-9 h-9 transition-all duration-200 transform hover:scale-110 ${rating >= star ? 'text-yellow-400 drop-shadow-sm' : 'text-gray-300 dark:text-gray-600 hover:text-yellow-200'}`}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                                                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                                                        </svg>
-                                                    </button>
-                                                ))}
-                                                {rating > 0 && (
-                                                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">{rating}/5</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* === Cover Tab === */}
-                                {activeTab === 'cover' && (
-                                    <>
-                                        {/* Current Cover Preview */}
-                                        {previewUrl && (
-                                            <div className="flex justify-center mb-4">
-                                                <div className="relative w-32 h-48 rounded-xl overflow-hidden shadow-lg border-2 border-gray-100 dark:border-gray-600">
-                                                    <img
-                                                        src={previewUrl}
-                                                        alt={title}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                <div className="space-y-3">
+                                    {/* File Input */}
+                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors relative">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
+                                        {previewUrl ? (
+                                            <div className="relative h-48 w-32 mx-auto">
+                                                <img
+                                                    src={previewUrl}
+                                                    alt="Preview"
+                                                    className="w-full h-full object-cover rounded-md shadow-sm"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                                                    <span className="text-white text-sm font-medium">{t('changeImage')}</span>
                                                 </div>
                                             </div>
-                                        )}
-
-                                        {/* File Input */}
-                                        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors relative cursor-pointer">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                            />
-                                            <div className="space-y-2">
-                                                <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        ) : (
+                                            <div className="space-y-1">
+                                                <svg className="mx-auto h-10 w-10 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('uploadImage')}</p>
-                                                <p className="text-xs text-gray-400 dark:text-gray-500">{t('dragDrop')}</p>
+                                                <p className="text-sm text-gray-500">{t('uploadImage')}</p>
+                                                <p className="text-xs text-gray-400">{t('dragDrop')}</p>
                                             </div>
-                                        </div>
+                                        )}
+                                    </div>
 
-                                        {/* Divider */}
-                                        <div className="relative">
-                                            <div className="absolute inset-0 flex items-center">
-                                                <div className="w-full border-t border-gray-200 dark:border-gray-600"></div>
-                                            </div>
-                                            <div className="relative flex justify-center text-sm">
-                                                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">{t('orUrl')}</span>
-                                            </div>
+                                    {/* Divider with Text */}
+                                    <div className="relative">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <div className="w-full border-t border-gray-200"></div>
                                         </div>
-
-                                        {/* URL Input */}
-                                        <input
-                                            type="url"
-                                            value={coverUrl}
-                                            onChange={(e) => {
-                                                setCoverUrl(e.target.value);
-                                                if (e.target.value) {
-                                                    setCoverFile(null);
-                                                    setPreviewUrl(e.target.value);
-                                                }
-                                            }}
-                                            className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-600 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                            placeholder="https://example.com/cover.jpg"
-                                        />
-                                    </>
-                                )}
-
-                                {/* === Notes Tab === */}
-                                {activeTab === 'notes' && (
-                                    <>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {t('noteLabel')}
-                                            </label>
-                                            <textarea
-                                                value={note}
-                                                onChange={(e) => setNote(e.target.value)}
-                                                className="w-full h-48 p-4 border border-gray-200 dark:border-gray-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-shadow"
-                                                placeholder={t('notePlaceholder')}
-                                            />
-                                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">
-                                                {note.length} {t('characters')}
-                                            </p>
+                                        <div className="relative flex justify-center text-sm">
+                                            <span className="px-2 bg-white text-gray-500">{t('orUrl')}</span>
                                         </div>
-                                    </>
-                                )}
+                                    </div>
+
+                                    {/* URL Input */}
+                                    <input
+                                        type="url"
+                                        value={coverUrl}
+                                        onChange={(e) => {
+                                            setCoverUrl(e.target.value);
+                                            if (e.target.value) {
+                                                setCoverFile(null);
+                                                setPreviewUrl(e.target.value);
+                                            }
+                                        }}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                        placeholder="https://example.com/cover.jpg"
+                                    />
+                                </div>
                             </div>
 
-                            {/* Footer Buttons */}
-                            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex gap-3">
+                            {/* Status */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('statusLabel')}
+                                </label>
+                                <select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value as BookStatus)}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                                >
+                                    <option value="unread">{t('unread')}</option>
+                                    <option value="reading">{t('reading')}</option>
+                                    <option value="completed">{t('completed')}</option>
+                                </select>
+                            </div>
+
+                            {/* Note */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('noteLabel')}
+                                </label>
+                                <textarea
+                                    value={note}
+                                    onChange={(e) => setNote(e.target.value)}
+                                    className="w-full h-28 px-4 py-2 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    placeholder={t('notePlaceholder')}
+                                />
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"
                                     onClick={onClose}
                                     disabled={isUploading}
-                                    className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 font-medium"
+                                    className="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
                                 >
                                     {t('cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isUploading}
-                                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-sm"
+                                    className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isUploading && (
                                         <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
