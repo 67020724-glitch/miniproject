@@ -76,6 +76,7 @@ storynest/
 │   ├── status/                 # หน้าสถานะการอ่าน
 │   ├── summary/                # หน้าสรุปพฤติกรรม
 │   ├── settings/               # หน้าตั้งค่า
+│   ├── profile/                # หน้าโปรไฟล์ผู้ใช้
 │   └── about/                  # หน้าเกี่ยวกับ
 ├── components/                 # React Components
 │   ├── AddBookModal.tsx        # Modal เพิ่มหนังสือ
