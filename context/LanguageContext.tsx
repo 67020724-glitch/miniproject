@@ -158,6 +158,11 @@ export const translations = {
         profile: 'โปรไฟล์',
         guest: 'ผู้เยี่ยมชม',
         loginToManageLibrary: 'เข้าสู่ระบบเพื่อจัดการคลังหนังสือ',
+        updateProfile: 'บันทึกข้อมูลส่วนตัว',
+        profileUpdated: 'อัปเดตโปรไฟล์เรียบร้อยแล้ว',
+        profileUpdateError: 'ไม่สามารถอัปเดตโปรไฟล์ได้',
+        editProfile: 'แก้ไขโปรไฟล์',
+        changeAvatar: 'เปลี่ยนรูปโปรไฟล์',
 
         // Add Book Modal
         addBookTitle: 'เพิ่มหนังสือใหม่',
@@ -416,6 +421,11 @@ export const translations = {
         profile: 'Profile',
         guest: 'Guest',
         loginToManageLibrary: 'Login to manage your library',
+        updateProfile: 'Update Profile',
+        profileUpdated: 'Profile updated successfully',
+        profileUpdateError: 'Could not update profile',
+        editProfile: 'Edit Profile',
+        changeAvatar: 'Change Avatar',
     }
 };
 
