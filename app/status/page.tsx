@@ -5,7 +5,7 @@ import { useBooks } from '@/context/BookContext';
 import { useLanguage } from '@/context/LanguageContext';
 import BookCard from '@/components/BookCard';
 import EditBookModal from '@/components/EditBookModal';
-import NoteModal from '@/components/NoteModal';
+
 import { Book, BookStatus } from '@/types/book';
 
 type TabType = 'all' | BookStatus;
@@ -25,8 +25,7 @@ export default function StatusPage() {
     const [activeTab, setActiveTab] = useState<TabType>('all');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-    const [selectedBookForNote, setSelectedBookForNote] = useState<Book | null>(null);
+
 
     const filteredBooks = activeTab === 'all' ? books : getBooksByStatus(activeTab);
 
@@ -66,10 +65,7 @@ export default function StatusPage() {
                             onDelete={deleteBook}
                             onStatusChange={(id, status) => updateBook(id, { status })}
                             onRatingChange={(id, rating) => updateBook(id, { rating })}
-                            onEditNote={(book) => {
-                                setSelectedBookForNote(book);
-                                setIsNoteModalOpen(true);
-                            }}
+
                             onEdit={(book) => {
                                 setSelectedBookForEdit(book);
                                 setIsEditModalOpen(true);
@@ -100,15 +96,7 @@ export default function StatusPage() {
                 book={selectedBookForEdit}
             />
 
-            {/* Note Modal */}
-            <NoteModal
-                isOpen={isNoteModalOpen}
-                onClose={() => {
-                    setIsNoteModalOpen(false);
-                    setSelectedBookForNote(null);
-                }}
-                book={selectedBookForNote}
-            />
+
         </div>
     );
 }
