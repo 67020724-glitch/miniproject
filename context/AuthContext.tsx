@@ -7,7 +7,10 @@ interface User {
     id: string;
     name: string;
     email: string;
+    avatar_url?: string;
 }
+
+type OAuthProvider = 'google' | 'github';
 
 interface AuthContextType {
     user: User | null;
@@ -16,6 +19,8 @@ interface AuthContextType {
     login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
     register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
+    forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+    signInWithProvider: (provider: OAuthProvider) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,16 +29,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
 
+    const extractUser = (supabaseUser: any): User => ({
+        id: supabaseUser.id,
+        email: supabaseUser.email!,
+        name: supabaseUser.user_metadata?.name
+            || supabaseUser.user_metadata?.full_name
+            || supabaseUser.user_metadata?.user_name
+            || supabaseUser.email?.split('@')[0]
+            || 'User',
+        avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
+    });
+
     useEffect(() => {
         // Check active sessions and sets the user
         const initializeAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
-                setUser({
-                    id: session.user.id,
-                    email: session.user.email!,
-                    name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-                });
+                setUser(extractUser(session.user));
             }
             setIsInitialized(true);
         };
@@ -42,11 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user) {
-                setUser({
-                    id: session.user.id,
-                    email: session.user.email!,
-                    name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-                });
+                setUser(extractUser(session.user));
             } else {
                 setUser(null);
             }
@@ -58,10 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (email: string, password: string, rememberMe: boolean = true): Promise<{ success: boolean; error?: string }> => {
         try {
-            // Note: Supabase defaults to localStorage (persistent). 
-            // In this version, we don't dynamically toggle persistence.
-            // Future improvement: use custom storage adapter if session-only is strongly required.
-
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -93,6 +97,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const forgotPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const redirectUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/reset-password`
+                : '';
+
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: redirectUrl,
+            });
+            if (error) throw error;
+            return { success: true };
+        } catch (error: any) {
+            console.error('Forgot password error:', error);
+            return { success: false, error: error.message || 'เกิดข้อผิดพลาดในการรีเซ็ตรหัสผ่าน' };
+        }
+    };
+
+    const signInWithProvider = async (provider: OAuthProvider): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const redirectUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/callback`
+                : '';
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: redirectUrl,
+                },
+            });
+            if (error) throw error;
+            return { success: true };
+        } catch (error: any) {
+            console.error('OAuth error:', error);
+            return { success: false, error: error.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ' };
+        }
+    };
+
     const logout = async () => {
         try {
             await supabase.auth.signOut();
@@ -111,6 +152,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 login,
                 register,
                 logout,
+                forgotPassword,
+                signInWithProvider,
             }}
         >
             {children}
