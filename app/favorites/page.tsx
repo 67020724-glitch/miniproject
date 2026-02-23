@@ -5,7 +5,7 @@ import { useBooks } from '@/context/BookContext';
 import { useLanguage } from '@/context/LanguageContext';
 import BookCard from '@/components/BookCard';
 import EditBookModal from '@/components/EditBookModal';
-import NoteModal from '@/components/NoteModal';
+
 import { Book } from '@/types/book';
 
 export default function FavoritesPage() {
@@ -14,8 +14,7 @@ export default function FavoritesPage() {
     const favoriteBooks = getFavoriteBooks();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-    const [selectedBookForNote, setSelectedBookForNote] = useState<Book | null>(null);
+
 
     return (
         <div className="flex flex-col gap-6">
@@ -40,10 +39,7 @@ export default function FavoritesPage() {
                                 onDelete={deleteBook}
                                 onStatusChange={(id, status) => updateBook(id, { status })}
                                 onRatingChange={(id, rating) => updateBook(id, { rating })}
-                                onEditNote={(book) => {
-                                    setSelectedBookForNote(book);
-                                    setIsNoteModalOpen(true);
-                                }}
+
                                 onEdit={(book) => {
                                     setSelectedBookForEdit(book);
                                     setIsEditModalOpen(true);
@@ -74,15 +70,7 @@ export default function FavoritesPage() {
                 book={selectedBookForEdit}
             />
 
-            {/* Note Modal */}
-            <NoteModal
-                isOpen={isNoteModalOpen}
-                onClose={() => {
-                    setIsNoteModalOpen(false);
-                    setSelectedBookForNote(null);
-                }}
-                book={selectedBookForNote}
-            />
+
         </div>
     );
 }

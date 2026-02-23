@@ -7,7 +7,6 @@ import { useLanguage } from '@/context/LanguageContext';
 import BookCard from '@/components/BookCard';
 import AddBookModal from '@/components/AddBookModal';
 import EditBookModal from '@/components/EditBookModal';
-import NoteModal from '@/components/NoteModal';
 import WelcomePage from '@/components/WelcomePage';
 import { Book } from '@/types/book';
 
@@ -18,8 +17,6 @@ export default function HomePage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [selectedBookForNote, setSelectedBookForNote] = useState<Book | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [showAll, setShowAll] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState('');
@@ -198,10 +195,7 @@ export default function HomePage() {
               onDelete={deleteBook}
               onStatusChange={(id, status) => updateBook(id, { status })}
               onRatingChange={(id, rating) => updateBook(id, { rating })}
-              onEditNote={(book) => {
-                setSelectedBookForNote(book);
-                setIsNoteModalOpen(true);
-              }}
+
               onEdit={(book) => {
                 setSelectedBookForEdit(book);
                 setIsEditModalOpen(true);
@@ -244,15 +238,7 @@ export default function HomePage() {
         book={selectedBookForEdit}
       />
 
-      {/* Note Modal */}
-      <NoteModal
-        isOpen={isNoteModalOpen}
-        onClose={() => {
-          setIsNoteModalOpen(false);
-          setSelectedBookForNote(null);
-        }}
-        book={selectedBookForNote}
-      />
+
     </div>
   );
 }

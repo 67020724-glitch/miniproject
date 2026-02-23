@@ -10,7 +10,6 @@ interface BookCardProps {
     onDelete?: (id: string) => void;
     onStatusChange?: (id: string, status: Book['status']) => void;
     onRatingChange?: (id: string, rating: number) => void;
-    onEditNote?: (book: Book) => void;
     onEdit?: (book: Book) => void;
     onFavorite?: (id: string) => void;
     showActions?: boolean;
@@ -23,7 +22,6 @@ export default function BookCard({
     onDelete,
     onStatusChange,
     onRatingChange,
-    onEditNote,
     onEdit,
     onFavorite,
     showActions = false,
@@ -145,16 +143,7 @@ export default function BookCard({
                             {t('editBook')}
                         </button>
 
-                        {/* Note Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onEditNote?.(book);
-                            }}
-                            className="w-full px-2 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                        >
-                            {t('addNote')}
-                        </button>
+
 
                         <button
                             onClick={(e) => {
