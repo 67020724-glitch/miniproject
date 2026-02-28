@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
@@ -12,6 +13,19 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { isLoggedIn, isLoading } = useAuth();
+    const pathname = usePathname();
+    const router = useRouter();
+
+    useEffect(() => {
+        // Define public paths that don't need authentication
+        const publicPaths = ['/'];
+        const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith('/auth/');
+
+        // If auth loaded, user is not logged in, and trying to access private page
+        if (!isLoading && !isLoggedIn && !isPublicPath) {
+            router.push('/');
+        }
+    }, [isLoading, isLoggedIn, pathname, router]);
 
     // While loading auth state, show a clean background
     if (isLoading) {
