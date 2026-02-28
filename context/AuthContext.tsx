@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 
 interface User {
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    const router = useRouter();
 
     const extractUser = (supabaseUser: any): User => ({
         id: supabaseUser.id,
@@ -46,7 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const initializeAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
-                setUser(extractUser(session.user));
+                // Verify session token validity against server
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error || !user) {
+                    setUser(null);
+                    await supabase.auth.signOut();
+                } else {
+                    setUser(extractUser(user));
+                }
+            } else {
+                setUser(null);
             }
             setIsInitialized(true);
         };
@@ -158,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             await supabase.auth.signOut();
             setUser(null);
+            router.push('/');
         } catch (error) {
             console.error('Logout error:', error);
         }

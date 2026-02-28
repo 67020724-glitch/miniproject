@@ -1,5 +1,5 @@
 
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -16,6 +16,6 @@ const isValidUrl = (urlString: string | undefined) => {
 }
 
 export const supabase = isValidUrl(supabaseUrl) && supabaseAnonKey
-    ? createClient(supabaseUrl!, supabaseAnonKey)
-    : createClient('https://placeholder.supabase.co', 'placeholder-key'); // Fallback to avoid crash
+    ? createBrowserClient(supabaseUrl!, supabaseAnonKey)
+    : createBrowserClient('https://placeholder.supabase.co', 'placeholder-key'); // Fallback to avoid crash
 
