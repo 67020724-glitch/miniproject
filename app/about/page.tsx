@@ -56,12 +56,7 @@ export default function AboutPage() {
                     {/* Tech Stack */}
                     <div className="space-y-3">
                         <h3 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>{t('techStack')}</h3>
-                        <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Next.js</span>
-                            <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">React</span>
-                            <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">TypeScript</span>
-                            <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Tailwind CSS</span>
-                        </div>
+                       
                     </div>
 
                     {/* Version */}
