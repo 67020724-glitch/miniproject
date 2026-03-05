@@ -40,7 +40,8 @@
 - 🌙 **Dark Mode** — สลับธีมสว่าง/มืด
 - 🌐 **2 ภาษา** — รองรับภาษาไทยและภาษาอังกฤษ
 - 📱 **Responsive** — ใช้งานได้ทั้งบน Desktop และ Mobile
-- ⚡ **Realtime** — อัปเดตข้อมูลแบบ Realtime ผ่าน Supabase
+- ⚡ **Realtime & Fallback** — ระบบอัปเดตข้อมูลแบบ Realtime พร้อมระบบสำรองหากข้อมูลบางส่วนมีปัญหา (PostgREST Schema Cache Fix)
+- 📖 **ข้อมูลแหล่งที่มา** — บันทึกประเภทหนังสือ (เล่ม/ออนไลน์/PDF) และระบบนับหน้าหนังสือ (Pages Read/Total Pages)
 
 ---
 
