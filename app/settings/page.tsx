@@ -80,12 +80,6 @@ export default function SettingsPage() {
                 <div>
                     <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>{t('dataManagement')}</h3>
                     <div className="space-y-3">
-                        <button
-                            className="px-4 py-2 border rounded-xl text-sm transition-colors hover:opacity-80"
-                            style={{ borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
-                        >
-                            {t('exportData')}
-                        </button>
                         <button className="px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm hover:bg-red-50 transition-colors ml-3">
                             {t('deleteAllData')}
                         </button>
