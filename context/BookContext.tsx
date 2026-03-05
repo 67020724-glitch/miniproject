@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Book, BookStatus } from '@/types/book';
+import { Book, BookStatus, BookSource } from '@/types/book';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from './AuthContext';
 
@@ -140,6 +140,11 @@ export function BookProvider({ children }: { children: ReactNode }) {
                             note: newRecord.note !== undefined ? newRecord.note : existingBook.note,
                             startedAt: newRecord.started_at ? new Date(newRecord.started_at) : (newRecord.started_at === null ? undefined : existingBook.startedAt),
                             completedAt: newRecord.completed_at ? new Date(newRecord.completed_at) : (newRecord.completed_at === null ? undefined : existingBook.completedAt),
+                            source: newRecord.source !== undefined ? newRecord.source : (newRecord.source === null ? undefined : existingBook.source),
+                            sourceUrl: newRecord.source_url !== undefined ? newRecord.source_url : (newRecord.source_url === null ? '' : existingBook.sourceUrl),
+                            totalPages: newRecord.total_pages !== undefined ? newRecord.total_pages : existingBook.totalPages,
+                            pagesPerDay: newRecord.pages_per_day !== undefined ? newRecord.pages_per_day : existingBook.pagesPerDay,
+                            pagesRead: newRecord.pages_read !== undefined ? newRecord.pages_read : existingBook.pagesRead,
                         };
                     } else if (payload.eventType === 'INSERT') {
                         // INSERT usually comes with full data
@@ -202,6 +207,11 @@ export function BookProvider({ children }: { children: ReactNode }) {
         completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
         rating: data.rating || 0,
         note: data.note || '',
+        source: (data.source as BookSource) || undefined,
+        sourceUrl: data.source_url || '',
+        totalPages: data.total_pages || undefined,
+        pagesPerDay: data.pages_per_day || undefined,
+        pagesRead: data.pages_read || 0,
     });
 
     // Filter books based on search query
@@ -226,6 +236,11 @@ export function BookProvider({ children }: { children: ReactNode }) {
                 is_favorite: bookData.isFavorite,
                 rating: bookData.rating,
                 deleted_at: null,
+                source: bookData.source || null,
+                source_url: bookData.sourceUrl || null,
+                total_pages: bookData.totalPages || null,
+                pages_per_day: bookData.pagesPerDay || null,
+                pages_read: bookData.pagesRead || 0,
             };
 
             if (bookData.status === 'reading') {
@@ -253,6 +268,8 @@ export function BookProvider({ children }: { children: ReactNode }) {
 
     const updateBook = async (id: string, updates: Partial<Book>) => {
         try {
+            // ค้นหาข้อมูลหนังสือเล่มปัจจุบันก่อนอัปเดต
+            const currentBook = books.find(b => b.id === id);
             const updateData: any = {};
             const localUpdates: Partial<Book> = { ...updates };
             const now = new Date();
@@ -260,25 +277,28 @@ export function BookProvider({ children }: { children: ReactNode }) {
             if (updates.title !== undefined) updateData.title = updates.title;
             if (updates.author !== undefined) updateData.author = updates.author;
 
-            if (updates.status !== undefined) {
+            if (updates.status !== undefined && (!currentBook || currentBook.status !== updates.status)) {
                 updateData.status = updates.status;
 
-                // Set dates based on status
+                // Set dates based on status change
                 if (updates.status === 'reading') {
                     updateData.started_at = now.toISOString();
-                    updateData.completed_at = null; // Reset completed date
+                    updateData.completed_at = null;
                     localUpdates.startedAt = now;
                     localUpdates.completedAt = null;
                 } else if (updates.status === 'completed') {
                     updateData.completed_at = now.toISOString();
                     localUpdates.completedAt = now;
-                    // Don't overwrite started_at if it exists
+                    // Keep started_at if it exists
                 } else if (updates.status === 'unread') {
                     updateData.started_at = null;
                     updateData.completed_at = null;
                     localUpdates.startedAt = null;
                     localUpdates.completedAt = null;
                 }
+            } else if (updates.status !== undefined) {
+                // Status is provided but hasn't changed, just send the status string
+                updateData.status = updates.status;
             }
 
             if (updates.coverUrl !== undefined) updateData.cover_url = updates.coverUrl;
@@ -286,20 +306,59 @@ export function BookProvider({ children }: { children: ReactNode }) {
             if (updates.rating !== undefined) updateData.rating = updates.rating;
             if (updates.note !== undefined) updateData.note = updates.note;
             if (updates.category !== undefined) updateData.category = updates.category;
+            if (updates.source !== undefined) updateData.source = updates.source;
 
-            const { error } = await supabase
+            // Only include these if they are non-null/non-empty to avoid potential schema cache issues
+            // but still allow setting to null if explicitly cleared
+            if (updates.sourceUrl !== undefined) {
+                updateData.source_url = updates.sourceUrl === '' ? null : updates.sourceUrl;
+            }
+            if (updates.totalPages !== undefined) {
+                updateData.total_pages = updates.totalPages === 0 ? null : updates.totalPages;
+            }
+            if (updates.pagesPerDay !== undefined) {
+                updateData.pages_per_day = updates.pagesPerDay === 0 ? null : updates.pagesPerDay;
+            }
+            if (updates.pagesRead !== undefined) {
+                updateData.pages_read = updates.pagesRead || 0;
+            }
+
+            console.log('Updating book in Supabase:', id, updateData);
+
+            let { error } = await supabase
                 .from('books')
                 .update(updateData)
                 .eq('id', id);
 
-            if (error) throw error;
+            if (error && (error.message.includes('schema cache') || error.code === 'PGRST204')) {
+                console.warn('Schema cache error detected. Retrying without problematic columns...');
+                const fallbackData = { ...updateData };
+                delete fallbackData.source_url;
+                delete fallbackData.pages_read;
+                delete fallbackData.total_pages;
+                delete fallbackData.pages_per_day;
 
-            // Optimistically update local state immediately
+                const { error: retryError } = await supabase
+                    .from('books')
+                    .update(fallbackData)
+                    .eq('id', id);
+
+                if (retryError) throw retryError;
+                console.log('Fallback update successful (ignored problematic columns)');
+            } else if (error) {
+                console.error('Supabase update returned error:', error);
+                throw error;
+            }
+
+            console.log('Update successful');
+
+            // อัปเดตข้อมูลในหน้าเว็บทันทีโดยไม่ต้องรอโหลดใหม่ (Optimistic UI)
             setBooks((prev) =>
                 prev.map((book) => (book.id === id ? { ...book, ...localUpdates } : book))
             );
-        } catch (error) {
-            console.error('Error updating book:', error);
+        } catch (error: any) {
+            console.error('Error in updateBook context function:', error.message || error);
+            throw error;
         }
     };
 

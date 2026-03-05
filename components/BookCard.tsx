@@ -12,8 +12,11 @@ interface BookCardProps {
     onRatingChange?: (id: string, rating: number) => void;
     onEdit?: (book: Book) => void;
     onFavorite?: (id: string) => void;
+    onUpdateProgress?: (book: Book) => void;
     showActions?: boolean;
     showYear?: boolean;
+    hideInfo?: boolean;
+    hideFavorite?: boolean;
 }
 
 export default function BookCard({
@@ -24,11 +27,32 @@ export default function BookCard({
     onRatingChange,
     onEdit,
     onFavorite,
+    onUpdateProgress,
     showActions = false,
     showYear = false,
+    hideInfo = false,
+    hideFavorite = false,
 }: BookCardProps) {
     const { t, language } = useLanguage();
     const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+
+    // Source label helper
+    const getSourceLabel = (source?: string | null) => {
+        const sourceMap: Record<string, { icon: string; key: string }> = {
+            physical: { icon: '📖', key: 'sourcePhysical' },
+            online: { icon: '🌐', key: 'sourceOnline' },
+            pdf: { icon: '📄', key: 'sourcePDF' },
+            library: { icon: '🏤', key: 'sourceLibrary' },
+            other: { icon: '📌', key: 'sourceOther' },
+        };
+        if (!source || !sourceMap[source]) return null;
+        return sourceMap[source];
+    };
+
+    const sourceInfo = getSourceLabel(book.source);
+    const progressPercent = book.totalPages && book.totalPages > 0
+        ? Math.min(100, Math.round(((book.pagesRead || 0) / book.totalPages) * 100))
+        : 0;
 
     const widthClasses = {
         small: 'w-20',
@@ -76,7 +100,7 @@ export default function BookCard({
             onClick={() => setIsOverlayOpen(!isOverlayOpen)}
         >
             {/* Favorite Button - Always visible, floating outside */}
-            {onFavorite && (
+            {onFavorite && !hideFavorite && (
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
@@ -105,8 +129,9 @@ export default function BookCard({
                 <img
                     src={book.coverUrl}
                     alt={book.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none select-none"
                     loading="eager"
+                    draggable="false"
                 />
 
                 {/* Hover Overlay - Click to toggle on mobile, hover on desktop */}
@@ -135,7 +160,7 @@ export default function BookCard({
                                 e.stopPropagation();
                                 onEdit?.(book);
                             }}
-                            className="w-full px-2 py-1 text-xs rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors flex items-center justify-center gap-1"
+                            className="w-full px-1 py-1.5 text-[11px] rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors flex items-center justify-center gap-1 whitespace-nowrap select-none"
                         >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -150,16 +175,29 @@ export default function BookCard({
                                 e.stopPropagation();
                                 onDelete?.(book.id);
                             }}
-                            className="w-full px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600 transition-colors"
+                            className="w-full px-1 py-1.5 text-[11px] rounded bg-red-500 text-white hover:bg-red-600 transition-colors whitespace-nowrap select-none"
                         >
                             {t('moveToTrash')}
                         </button>
+
+                        {/* Update Progress Button */}
+                        {onUpdateProgress && book.status === 'reading' && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUpdateProgress(book);
+                                }}
+                                className="w-full px-1 py-1.5 text-[10px] rounded bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center justify-center gap-1 whitespace-nowrap select-none"
+                            >
+                                📝 {t('updateProgress')}
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
 
             {/* Book Info */}
-            {size !== 'small' && (
+            {!hideInfo && size !== 'small' && (
                 <div className="mt-2 w-full flex flex-col items-center gap-1">
                     <p className="text-xs font-medium line-clamp-2 text-center" style={{ color: 'var(--text-primary)' }}>
                         {book.title}
@@ -191,6 +229,50 @@ export default function BookCard({
                             <p className="text-[10px] text-gray-500 line-clamp-1 text-center bg-gray-50 rounded px-1" title={book.note}>
                                 📝 {book.note}
                             </p>
+                        </div>
+                    )}
+
+                    {/* Source Badge */}
+                    {sourceInfo && (
+                        book.sourceUrl ? (
+                            <a
+                                href={book.sourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-flex items-center gap-1 w-fit
+                                bg-purple-50 text-purple-600 border border-purple-200 hover:bg-purple-100
+                                dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700 dark:hover:bg-purple-900/50 transition-colors"
+                            >
+                                {sourceInfo.icon} {t(sourceInfo.key as any)} 🔗
+                            </a>
+                        ) : (
+                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-flex items-center gap-1 w-fit
+                                bg-purple-50 text-purple-600 border border-purple-200
+                                dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700">
+                                {sourceInfo.icon} {t(sourceInfo.key as any)}
+                            </span>
+                        )
+                    )}
+
+                    {/* Progress Bar */}
+                    {book.totalPages && book.totalPages > 0 && (
+                        <div className="w-full px-2 mt-1">
+                            <div className="flex justify-between text-[9px] text-gray-400 mb-0.5">
+                                <span>{book.pagesRead || 0}/{book.totalPages}</span>
+                                <span>{progressPercent}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div
+                                    className="h-1.5 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${progressPercent}%`,
+                                        background: progressPercent >= 100
+                                            ? 'linear-gradient(90deg, #10b981, #059669)'
+                                            : 'linear-gradient(90deg, #3b82f6, #6366f1)'
+                                    }}
+                                />
+                            </div>
                         </div>
                     )}
                 </div>

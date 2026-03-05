@@ -181,6 +181,7 @@ export const translations = {
         changeImage: 'เปลี่ยนรูป',
         save: 'เพิ่มหนังสือ',
         saving: 'กำลังบันทึก...',
+        saveFailed: 'บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
 
         // Categories
         catFiction: 'นิยาย (Fiction)',
@@ -215,6 +216,47 @@ export const translations = {
         saveChanges: 'บันทึกการเปลี่ยนแปลง',
         fileSizeLimit: 'ขนาดไฟล์ต้องไม่เกิน 5MB',
         uploadFailed: 'การอัปโหลดรูปภาพล้มเหลว กรุณาลองใหม่อีกครั้ง',
+
+        // Book Source
+        sourceLabel: 'แหล่งที่มาของหนังสือ',
+        sourcePhysical: 'หนังสือเล่มจริง (Physical Book)',
+        sourceOnline: 'อ่านออนไลน์ (Online / E-book)',
+        sourcePDF: 'PDF',
+        sourceLibrary: 'ห้องสมุด (Library)',
+        sourceOther: 'อื่นๆ (Other)',
+        sourcePlaceholder: 'เลือกแหล่งที่มา',
+        sourceUrlLabel: 'หลักฐาน / แหล่งอ้างอิง',
+        sourceUrlPlaceholder: 'ใส่ลิงก์ URL หรือรายละเอียดแหล่งที่มา',
+
+        // Reading Goal & Progress
+        totalPagesLabel: 'จำนวนหน้าทั้งหมด',
+        pagesPerDayLabel: 'เป้าหมายการอ่านต่อวัน (หน้า)',
+        estimatedDays: 'คาดว่าจะอ่านจบใน',
+        days: 'วัน',
+        pages: 'หน้า',
+        progressLabel: 'ความคืบหน้า',
+        pagesReadLabel: 'จำนวนหน้าที่อ่านแล้ว',
+
+        // Daily Goal
+        todaysGoal: 'เป้าหมายวันนี้',
+        readPages: 'อ่าน {count} หน้า',
+        goalCompleted: '🎉 พิชิตเป้าหมายแล้ว!',
+        dailyGoalTitle: 'เป้าหมายการอ่านประจำวัน',
+        noGoalSet: 'ยังไม่ได้ตั้งเป้าหมาย',
+
+        // Update Progress
+        updateProgress: 'อัพเดตความคืบหน้า',
+        pagesReadToday: 'จำนวนหน้าที่อ่านวันนี้',
+        updateSuccess: 'อัพเดตสำเร็จ!',
+        bookCompleted: 'อ่านจบเล่มนี้แล้ว! 🎉',
+
+        // Home Page Sections
+        recentlyAdded: '🕒 เพิ่มล่าสุด',
+        currentlyReading: '📚 กำลังอ่าน',
+        completedBooks: '✅ อ่านจบแล้ว',
+        toReadBooks: '⏳ ยังไม่ได้อ่าน',
+        booksCount: '{count} เล่ม',
+        noBooksInSection: 'ไม่มีหนังสือในหมวดนี้',
     },
     en: {
         // Add Book Modal
@@ -234,6 +276,7 @@ export const translations = {
         changeImage: 'Change Image',
         save: 'Add Book',
         saving: 'Saving...',
+        saveFailed: 'Failed to save changes. Please try again.',
 
         // Filters
         filterByAuthor: 'By Author',
@@ -426,6 +469,47 @@ export const translations = {
         profileUpdateError: 'Could not update profile',
         editProfile: 'Edit Profile',
         changeAvatar: 'Change Avatar',
+
+        // Book Source
+        sourceLabel: 'Book Source',
+        sourcePhysical: 'Physical Book',
+        sourceOnline: 'Online / E-book',
+        sourcePDF: 'PDF',
+        sourceLibrary: 'Library',
+        sourceOther: 'Other',
+        sourcePlaceholder: 'Select source',
+        sourceUrlLabel: 'Reference / Evidence',
+        sourceUrlPlaceholder: 'Enter URL or describe the source',
+
+        // Reading Goal & Progress
+        totalPagesLabel: 'Total Pages',
+        pagesPerDayLabel: 'Reading Goal per Day (pages)',
+        estimatedDays: 'Estimated to finish in',
+        days: 'days',
+        pages: 'pages',
+        progressLabel: 'Progress',
+        pagesReadLabel: 'Pages Read',
+
+        // Daily Goal
+        todaysGoal: "Today's Goal",
+        readPages: 'Read {count} pages',
+        goalCompleted: '🎉 Goal completed!',
+        dailyGoalTitle: 'Daily Reading Goal',
+        noGoalSet: 'No goal set',
+
+        // Update Progress
+        updateProgress: 'Update Progress',
+        pagesReadToday: 'Pages read today',
+        updateSuccess: 'Updated successfully!',
+        bookCompleted: 'Book completed! 🎉',
+
+        // Home Page Sections
+        recentlyAdded: '🕒 Recently Added',
+        currentlyReading: '📚 Currently Reading',
+        completedBooks: '✅ Completed',
+        toReadBooks: '⏳ To Read',
+        booksCount: '{count} books',
+        noBooksInSection: 'No books in this section',
     }
 };
 

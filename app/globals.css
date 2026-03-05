@@ -237,6 +237,9 @@ select:-webkit-autofill:focus {
 }
 
 /* Standard transitions */
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   transition: all 0.2s ease;
 }

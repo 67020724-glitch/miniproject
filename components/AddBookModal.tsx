@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useBooks } from '@/context/BookContext';
-import { BookStatus } from '@/types/book';
+import { BookStatus, BookSource } from '@/types/book';
 import { supabase } from '@/lib/supabaseClient';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -73,6 +73,25 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [status, setStatus] = useState<BookStatus>('unread');
     const [rating, setRating] = useState(0);
+    const [source, setSource] = useState<BookSource | ''>('');
+    const [sourceUrl, setSourceUrl] = useState('');
+    const [totalPages, setTotalPages] = useState<number | ''>('');
+    const [pagesPerDay, setPagesPerDay] = useState<number | ''>('');
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+
+    // Calculate estimated days
+    const estimatedDays = totalPages && pagesPerDay && Number(pagesPerDay) > 0
+        ? Math.ceil(Number(totalPages) / Number(pagesPerDay))
+        : null;
+
+    const { books } = useBooks();
+    // Get unique categories from all books for the dropdown
+    const existingCategories = Array.from(new Set(books.map(b => b.category).filter(Boolean))) as string[];
+    const defaultCategories = [
+        t('catFiction'), t('catSelfHelp'), t('catBusiness'),
+        t('catTechnology'), t('catHistory'), t('catFinance'), t('catPsychology')
+    ];
+    const allCategorySuggestions = Array.from(new Set([...defaultCategories, ...existingCategories]));
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -180,6 +199,11 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
                 coverUrl: finalCoverUrl,
                 status,
                 rating,
+                source: source || undefined,
+                sourceUrl: sourceUrl.trim() || undefined,
+                totalPages: totalPages ? Number(totalPages) : undefined,
+                pagesPerDay: pagesPerDay ? Number(pagesPerDay) : undefined,
+                pagesRead: 0,
             });
 
             // Reset form
@@ -191,6 +215,10 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
             setPreviewUrl('');
             setStatus('unread');
             setRating(0);
+            setSource('');
+            setSourceUrl('');
+            setTotalPages('');
+            setPagesPerDay('');
             onClose();
         } catch (error) {
             console.error('Error adding book:', error);
@@ -249,27 +277,47 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
                             </div>
 
                             {/* Category */}
-                            <div>
+                            <div className="relative">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     {t('categoryLabel')}
                                 </label>
-                                <input
-                                    type="text"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    placeholder={t('categoryPlaceholder')}
-                                    list="categories"
-                                />
-                                <datalist id="categories">
-                                    <option value={t('catFiction')} />
-                                    <option value={t('catSelfHelp')} />
-                                    <option value={t('catBusiness')} />
-                                    <option value={t('catTechnology')} />
-                                    <option value={t('catHistory')} />
-                                    <option value={t('catFinance')} />
-                                    <option value={t('catPsychology')} />
-                                </datalist>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={category}
+                                        onChange={(e) => {
+                                            setCategory(e.target.value);
+                                            setShowCategoryDropdown(true);
+                                        }}
+                                        onFocus={() => setShowCategoryDropdown(true)}
+                                        onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                        placeholder={t('categoryPlaceholder')}
+                                    />
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                {showCategoryDropdown && (
+                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                        {allCategorySuggestions
+                                            .filter(c => c.toLowerCase().includes(category.toLowerCase()))
+                                            .map((cat, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-sm text-gray-700"
+                                                    onMouseDown={(e) => {
+                                                        e.preventDefault(); // Prevent blur before click
+                                                        setCategory(cat);
+                                                        setShowCategoryDropdown(false);
+                                                    }}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Rating */}
@@ -306,10 +354,10 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         />
                                         {previewUrl ? (
-                                            <div className="relative h-48 w-32 mx-auto">
+                                            <div className="relative h-48 w-32 mx-auto pointer-events-none">
                                                 <img
                                                     src={previewUrl}
                                                     alt="Preview"
@@ -371,6 +419,81 @@ export default function AddBookModal({ isOpen, onClose }: AddBookModalProps) {
                                     <option value="reading">{t('reading')}</option>
                                     <option value="completed">{t('completed')}</option>
                                 </select>
+                            </div>
+
+                            {/* Source */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('sourceLabel')}
+                                </label>
+                                <select
+                                    value={source}
+                                    onChange={(e) => setSource(e.target.value as BookSource | '')}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                                >
+                                    <option value="">{t('sourcePlaceholder')}</option>
+                                    <option value="physical">{t('sourcePhysical')}</option>
+                                    <option value="online">{t('sourceOnline')}</option>
+                                    <option value="pdf">{t('sourcePDF')}</option>
+                                    <option value="library">{t('sourceLibrary')}</option>
+                                    <option value="other">{t('sourceOther')}</option>
+                                </select>
+                                {/* Source URL / Reference */}
+                                {source && (
+                                    <div className="mt-2">
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('sourceUrlLabel')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={sourceUrl}
+                                            onChange={(e) => setSourceUrl(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder={t('sourceUrlPlaceholder')}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Reading Goal */}
+                            <div className="p-4 bg-gray-50 rounded-xl space-y-3">
+                                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    🎯 {t('totalPagesLabel')}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('totalPagesLabel')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={totalPages}
+                                            onChange={(e) => setTotalPages(e.target.value ? parseInt(e.target.value) : '')}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder="300"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('pagesPerDayLabel')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={pagesPerDay}
+                                            onChange={(e) => setPagesPerDay(e.target.value ? parseInt(e.target.value) : '')}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder="20"
+                                        />
+                                    </div>
+                                </div>
+                                {estimatedDays && (
+                                    <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg">
+                                        <span>✨</span>
+                                        <span>{t('estimatedDays')} <strong>{estimatedDays}</strong> {t('days')}</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Buttons */}

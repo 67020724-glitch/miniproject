@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useBooks } from '@/context/BookContext';
-import { Book, BookStatus } from '@/types/book';
+import { Book, BookStatus, BookSource } from '@/types/book';
 import { supabase } from '@/lib/supabaseClient';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -74,6 +74,21 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
     const [status, setStatus] = useState<BookStatus>('unread');
     const [rating, setRating] = useState(0);
     const [note, setNote] = useState('');
+    const [source, setSource] = useState<BookSource | ''>('');
+    const [sourceUrl, setSourceUrl] = useState('');
+    const [totalPages, setTotalPages] = useState<number | ''>('');
+    const [pagesPerDay, setPagesPerDay] = useState<number | ''>('');
+    const [pagesRead, setPagesRead] = useState<number | ''>('');
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+
+    // Calculate estimated days
+    const remaining = (totalPages ? Number(totalPages) : 0) - (pagesRead ? Number(pagesRead) : 0);
+    const estimatedDays = remaining > 0 && pagesPerDay && Number(pagesPerDay) > 0
+        ? Math.ceil(remaining / Number(pagesPerDay))
+        : null;
+    const progressPercent = totalPages && Number(totalPages) > 0
+        ? Math.min(100, Math.round(((pagesRead ? Number(pagesRead) : 0) / Number(totalPages)) * 100))
+        : 0;
 
     // Populate form when book changes
     useEffect(() => {
@@ -84,11 +99,27 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             setCoverUrl(book.coverUrl || '');
             setPreviewUrl(book.coverUrl || '');
             setCoverFile(null);
+            setIsUploading(false);
+            setShowCategoryDropdown(false);
             setStatus(book.status || 'unread');
             setRating(book.rating || 0);
             setNote(book.note || '');
+            setSource(book.source || '');
+            setSourceUrl(book.sourceUrl || '');
+            setTotalPages(book.totalPages || '');
+            setPagesPerDay(book.pagesPerDay || '');
+            setPagesRead(book.pagesRead || '');
         }
     }, [book, isOpen]);
+
+    const { books } = useBooks();
+    // Get unique categories from all books for the dropdown
+    const existingCategories = Array.from(new Set(books.map(b => b.category).filter(Boolean))) as string[];
+    const defaultCategories = [
+        t('catFiction'), t('catSelfHelp'), t('catBusiness'),
+        t('catTechnology'), t('catHistory'), t('catFinance'), t('catPsychology')
+    ];
+    const allCategorySuggestions = Array.from(new Set([...defaultCategories, ...existingCategories]));
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -151,29 +182,49 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         if (!book || !title.trim()) return;
 
         setIsUploading(true);
-        let finalCoverUrl = coverUrl || book.coverUrl;
-
-        if (coverFile) {
-            const uploadedUrl = await uploadImage(coverFile);
-            if (uploadedUrl) {
-                finalCoverUrl = uploadedUrl;
-            }
-        }
-
         try {
+            let finalCoverUrl = coverUrl.trim();
+
+            // 1. Handle file upload if present
+            if (coverFile) {
+                console.log('Uploading new cover image...');
+                const uploadedUrl = await uploadImage(coverFile);
+                if (uploadedUrl) {
+                    finalCoverUrl = uploadedUrl;
+                } else {
+                    setIsUploading(false);
+                    return; // Alert is already shown in uploadImage
+                }
+            }
+
+            // 2. Fallback to placeholder if everything is empty
+            if (!finalCoverUrl) {
+                finalCoverUrl = `https://placehold.co/150x200/374151/ffffff?text=${encodeURIComponent(title.charAt(0).toUpperCase())}`;
+            }
+
+            console.log('Sending update to context:', { title, finalCoverUrl });
+
+            // ส่งข้อมูลไปยัง Context เพื่ออัปเดตฐานข้อมูล (Supabase)
             await updateBook(book.id, {
                 title: title.trim(),
                 author: author.trim() || 'Unknown',
-                category: category.trim(),
+                category: category.trim() || null,
                 coverUrl: finalCoverUrl,
                 status,
-                rating,
-                note: note.trim(),
+                rating: rating || 0,
+                note: note.trim() || null,
+                source: source || null,
+                sourceUrl: sourceUrl.trim() || null,
+                totalPages: totalPages !== '' ? Number(totalPages) : null,
+                pagesPerDay: pagesPerDay !== '' ? Number(pagesPerDay) : null,
+                pagesRead: pagesRead !== '' ? Number(pagesRead) : 0,
             });
 
             onClose();
-        } catch (error) {
-            console.error('Error updating book:', error);
+        } catch (error: any) {
+            console.error('Submit handle error:', error);
+            const errorMsg = error.message || error.details || JSON.stringify(error);
+            alert(`${t('saveFailed')}\n\nError: ${errorMsg}`);
         } finally {
             setIsUploading(false);
         }
@@ -229,27 +280,47 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                             </div>
 
                             {/* Category */}
-                            <div>
+                            <div className="relative">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     {t('categoryLabel')}
                                 </label>
-                                <input
-                                    type="text"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    placeholder={t('categoryPlaceholder')}
-                                    list="edit-categories"
-                                />
-                                <datalist id="edit-categories">
-                                    <option value={t('catFiction')} />
-                                    <option value={t('catSelfHelp')} />
-                                    <option value={t('catBusiness')} />
-                                    <option value={t('catTechnology')} />
-                                    <option value={t('catHistory')} />
-                                    <option value={t('catFinance')} />
-                                    <option value={t('catPsychology')} />
-                                </datalist>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={category}
+                                        onChange={(e) => {
+                                            setCategory(e.target.value);
+                                            setShowCategoryDropdown(true);
+                                        }}
+                                        onFocus={() => setShowCategoryDropdown(true)}
+                                        onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                        placeholder={t('categoryPlaceholder')}
+                                    />
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                {showCategoryDropdown && (
+                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                        {allCategorySuggestions
+                                            .filter(c => c.toLowerCase().includes(category.toLowerCase()))
+                                            .map((cat, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-sm text-gray-700"
+                                                    onMouseDown={(e) => {
+                                                        e.preventDefault(); // Prevent blur before click
+                                                        setCategory(cat);
+                                                        setShowCategoryDropdown(false);
+                                                    }}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Rating */}
@@ -286,10 +357,10 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         />
                                         {previewUrl ? (
-                                            <div className="relative h-48 w-32 mx-auto">
+                                            <div className="relative h-48 w-32 mx-auto pointer-events-none">
                                                 <img
                                                     src={previewUrl}
                                                     alt="Preview"
@@ -325,10 +396,14 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                         type="url"
                                         value={coverUrl}
                                         onChange={(e) => {
-                                            setCoverUrl(e.target.value);
-                                            if (e.target.value) {
+                                            const val = e.target.value;
+                                            setCoverUrl(val);
+                                            if (val) {
                                                 setCoverFile(null);
-                                                setPreviewUrl(e.target.value);
+                                                setPreviewUrl(val);
+                                            } else if (!coverFile) {
+                                                // If link is cleared and no file, show placeholder preview
+                                                setPreviewUrl(`https://placehold.co/150x200/374151/ffffff?text=${encodeURIComponent(title.charAt(0).toUpperCase() || 'B')}`);
                                             }
                                         }}
                                         className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
@@ -364,6 +439,115 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                     className="w-full h-28 px-4 py-2 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     placeholder={t('notePlaceholder')}
                                 />
+                            </div>
+
+                            {/* Source */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('sourceLabel')}
+                                </label>
+                                <select
+                                    value={source}
+                                    onChange={(e) => setSource(e.target.value as BookSource | '')}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                                >
+                                    <option value="">{t('sourcePlaceholder')}</option>
+                                    <option value="physical">{t('sourcePhysical')}</option>
+                                    <option value="online">{t('sourceOnline')}</option>
+                                    <option value="pdf">{t('sourcePDF')}</option>
+                                    <option value="library">{t('sourceLibrary')}</option>
+                                    <option value="other">{t('sourceOther')}</option>
+                                </select>
+                                {/* Source URL / Reference */}
+                                {source && (
+                                    <div className="mt-2">
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('sourceUrlLabel')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={sourceUrl}
+                                            onChange={(e) => setSourceUrl(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder={t('sourceUrlPlaceholder')}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Reading Goal & Progress */}
+                            <div className="p-4 bg-gray-50 rounded-xl space-y-3">
+                                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    🎯 {t('progressLabel')}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('totalPagesLabel')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={totalPages}
+                                            onChange={(e) => setTotalPages(e.target.value ? parseInt(e.target.value) : '')}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder="300"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                            {t('pagesPerDayLabel')}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={pagesPerDay}
+                                            onChange={(e) => setPagesPerDay(e.target.value ? parseInt(e.target.value) : '')}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            placeholder="20"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-500 mb-1">
+                                        {t('pagesReadLabel')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max={totalPages ? Number(totalPages) : undefined}
+                                        value={pagesRead}
+                                        onChange={(e) => setPagesRead(e.target.value ? parseInt(e.target.value) : '')}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                        placeholder="0"
+                                    />
+                                </div>
+                                {/* Progress Bar */}
+                                {totalPages && Number(totalPages) > 0 && (
+                                    <div>
+                                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                            <span>{pagesRead || 0} / {totalPages} {t('pages')}</span>
+                                            <span>{progressPercent}%</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div
+                                                className="h-2.5 rounded-full transition-all duration-300"
+                                                style={{
+                                                    width: `${progressPercent}%`,
+                                                    background: progressPercent >= 100
+                                                        ? 'linear-gradient(90deg, #10b981, #059669)'
+                                                        : 'linear-gradient(90deg, #3b82f6, #6366f1)'
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                {estimatedDays && (
+                                    <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg">
+                                        <span>✨</span>
+                                        <span>{t('estimatedDays')} <strong>{estimatedDays}</strong> {t('days')}</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Buttons */}
