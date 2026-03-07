@@ -102,7 +102,7 @@ export default function TrashModal({ isOpen, onClose }: TrashModalProps) {
             />
 
             {/* Modal */}
-            <div className="relative bg-white rounded-2xl w-full max-w-lg max-h-[80vh] mx-4 flex flex-col">
+            <div className="relative bg-white rounded-2xl md:rounded-[2.5rem] w-full max-w-lg max-h-[85vh] mx-4 flex flex-col shadow-2xl overflow-hidden">
                 {/* Confirm Delete Single Book */}
                 <ConfirmDialog
                     isOpen={confirmDelete !== null}
@@ -126,7 +126,7 @@ export default function TrashModal({ isOpen, onClose }: TrashModalProps) {
                 />
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between p-5 md:p-8 border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
                             <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

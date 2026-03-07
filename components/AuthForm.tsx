@@ -101,7 +101,7 @@ export default function AuthForm({
         onSwitchMode?.(newMode);
     };
 
-    const inputClass = "w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400";
+    const inputClass = "w-full px-4 py-3 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400";
 
     return (
         <div className="w-full max-w-md mx-auto">

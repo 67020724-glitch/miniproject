@@ -56,7 +56,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <Topbar onMenuClick={() => setIsMobileMenuOpen(true)} />
 
                 {/* Page Content - only this scrolls */}
-                <main className="flex-1 p-6 overflow-y-auto">
+                <main className="flex-1 p-4 md:p-6 overflow-y-auto">
                     {children}
                 </main>
             </div>

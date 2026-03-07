@@ -31,7 +31,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 {/* Mobile Menu Button */}
                 <button
                     onClick={onMenuClick}
-                    className="md:hidden w-10 h-10 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
+                    className="md:hidden w-10 h-10 -ml-2 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
                     style={{ color: 'var(--text-muted)' }}
                     aria-label="Menu"
                 >
@@ -84,14 +84,14 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                             )}
                         </div>
                         <button
-                            className="hidden md:block px-6 py-2 bg-gray-700 text-white text-sm rounded-full hover:bg-gray-800 transition-colors flex-shrink-0"
+                            className="hidden md:block px-6 py-2 bg-[#4F46E5] text-white text-sm font-semibold rounded-full hover:bg-indigo-700 transition-colors flex-shrink-0"
                         >
                             {t('search')}
                         </button>
                     </div>
                 ) : (
                     <div className="hidden md:block flex-shrink-0">
-                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('welcome')}</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{t('welcome')}</span>
                     </div>
                 )}
 
@@ -110,10 +110,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                     {isLoggedIn && (
                         <button
                             onClick={() => setIsTrashOpen(true)}
-                            className="relative w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                            className="relative w-10 h-10 rounded-full border border-[var(--card-border)] flex items-center justify-center hover:bg-[var(--hover-bg)] transition-colors"
                         >
                             <svg
-                                className="w-5 h-5 text-gray-600"
+                                className="w-5 h-5"
+                                style={{ color: 'var(--text-secondary)' }}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -148,4 +149,3 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         </>
     );
 }
-

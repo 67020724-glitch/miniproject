@@ -244,7 +244,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div
-                        className="relative transform bg-white rounded-2xl text-left shadow-xl transition-all w-full max-w-md my-8 p-6"
+                        className="relative transform bg-white rounded-2xl md:rounded-[2.5rem] text-left shadow-xl transition-all w-full max-w-md my-4 md:my-8 p-5 md:p-8"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('editBookTitle')}</h2>
@@ -428,18 +428,6 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                 </select>
                             </div>
 
-                            {/* Note */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('noteLabel')}
-                                </label>
-                                <textarea
-                                    value={note}
-                                    onChange={(e) => setNote(e.target.value)}
-                                    className="w-full h-28 px-4 py-2 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
-                                    placeholder={t('notePlaceholder')}
-                                />
-                            </div>
 
                             {/* Source */}
                             <div>

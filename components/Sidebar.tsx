@@ -6,15 +6,14 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
-type MenuItemKey = 'home' | 'library' | 'bookStatus' | 'summary' | 'settings' | 'about' | 'favorites';
+type MenuItemKey = 'home' | 'library' | 'dashboard' | 'settings' | 'about' | 'favorites';
 
 // Menu items with translation keys
 const menuItems: { href: string; labelKey: MenuItemKey; icon: string }[] = [
     { href: '/', labelKey: 'home', icon: 'home' },
+    { href: '/dashboard', labelKey: 'dashboard', icon: 'summary' },
     { href: '/library', labelKey: 'library', icon: 'library' },
     { href: '/favorites', labelKey: 'favorites', icon: 'favorites' },
-    { href: '/status', labelKey: 'bookStatus', icon: 'status' },
-    { href: '/summary', labelKey: 'summary', icon: 'summary' },
 ];
 
 // Menu items for guests (not logged in)
@@ -104,7 +103,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     {/* Close Button (Mobile Only) */}
                     <button
                         onClick={onClose}
-                        className="md:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                        className="md:hidden w-10 h-10 -ml-2 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
                         style={{ color: 'var(--text-muted)' }}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,8 +123,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         href={item.href}
                                         onClick={onClose} // Close sidebar on navigation on mobile
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                            ? 'bg-gray-700 text-white'
-                                            : ''
+                                            ? 'bg-[var(--active-bg)] text-[var(--active-text)] shadow-sm'
+                                            : 'hover:bg-[var(--hover-bg)]'
                                             }`}
                                         style={!isActive ? { color: 'var(--text-secondary)' } : {}}
                                     >
@@ -149,8 +148,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         href={item.href}
                                         onClick={onClose}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                            ? 'bg-gray-700 text-white'
-                                            : ''
+                                            ? 'bg-[var(--active-bg)] text-[var(--active-text)] shadow-sm'
+                                            : 'hover:bg-[var(--hover-bg)]'
                                             }`}
                                         style={!isActive ? { color: 'var(--text-secondary)' } : {}}
                                     >
