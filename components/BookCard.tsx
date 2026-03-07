@@ -199,7 +199,7 @@ export default function BookCard({
             {/* Book Info */}
             {!hideInfo && size !== 'small' && (
                 <div className="mt-2 w-full flex flex-col items-center gap-1">
-                    <p className="text-xs font-medium line-clamp-2 text-center" style={{ color: 'var(--text-primary)' }}>
+                    <p className="text-xs font-medium line-clamp-3 text-center leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>
                         {book.title}
                     </p>
 
@@ -223,14 +223,6 @@ export default function BookCard({
 
 
 
-                    {/* Note Preview */}
-                    {book.note && (
-                        <div className="mt-1 px-2 w-full">
-                            <p className="text-[10px] text-gray-500 line-clamp-1 text-center bg-gray-50 rounded px-1" title={book.note}>
-                                📝 {book.note}
-                            </p>
-                        </div>
-                    )}
 
                     {/* Source Badge */}
                     {sourceInfo && (

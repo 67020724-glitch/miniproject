@@ -26,14 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" suppressHydrationWarning className="light">
+    <html lang="th" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
         <style>{`
-          html.dark { background-color: #111827; }
-          html.light { background-color: #f5f5f5; }
-          html.dark body { background-color: #111827; }
-          html.light body { background-color: #f5f5f5; }
+          html.dark { background-color: #0F172A; }
+          html.light { background-color: #F8FAFC; }
+          html.dark body { background-color: #0F172A; }
+          html.light body { background-color: #F8FAFC; }
         `}</style>
       </head>
       <body className="antialiased" suppressHydrationWarning>

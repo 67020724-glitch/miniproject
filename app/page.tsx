@@ -127,7 +127,7 @@ export default function HomePage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
           {title}
-          <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+          <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400">
             {sectionBooks.length}
           </span>
         </h2>
@@ -145,8 +145,8 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center">
-          <p className="text-sm text-gray-400">{emptyMsg}</p>
+        <div className="rounded-xl border border-dashed border-gray-300 dark:border-slate-700 p-6 text-center">
+          <p className="text-sm text-gray-400 dark:text-gray-500">{emptyMsg}</p>
         </div>
       )}
     </section>
@@ -156,8 +156,8 @@ export default function HomePage() {
     <div className="space-y-8">
       {/* Search Results Indicator */}
       {searchQuery.trim() && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <p className="text-blue-700">
+        <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
+          <p className="text-blue-700 dark:text-blue-400">
             {t('found')} <strong>{filteredBooks.length}</strong> {t('resultsFor')} &quot;{searchQuery}&quot;
           </p>
         </div>
@@ -165,11 +165,7 @@ export default function HomePage() {
 
       {/* Daily Reading Goal Banner */}
       {!searchQuery.trim() && dailyGoalBooks.length > 0 && (
-        <section className="relative overflow-hidden rounded-2xl p-5 border"
-          style={{
-            background: 'linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%)',
-            borderColor: '#bfdbfe'
-          }}>
+        <section className="relative overflow-hidden rounded-2xl p-5 border shadow-sm border-blue-200 dark:border-blue-500/20 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🎯</span>
             <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
@@ -184,13 +180,13 @@ export default function HomePage() {
               const progress = totalP > 0 ? Math.min(100, Math.round((todayPagesRead / totalP) * 100)) : 0;
 
               return (
-                <div key={book.id} className="flex items-center gap-3 bg-white/70 rounded-xl p-3 backdrop-blur-sm">
+                <div key={book.id} className="flex items-center gap-3 bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 backdrop-blur-sm">
                   {book.coverUrl && (
                     <img src={book.coverUrl} alt={book.title} className="w-10 h-14 object-cover rounded-lg shadow-sm flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{book.title}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-black text-gray-800 dark:text-gray-100 leading-tight mb-0.5">{book.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                       {t('todaysGoal')}: {t('readPages').replace('{count}', String(goalPages))}
                     </p>
                     {totalP > 0 && (
@@ -275,10 +271,10 @@ export default function HomePage() {
               <div className="snap-start shrink-0">
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="w-32 h-44 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center hover:border-gray-400 hover:bg-gray-50 transition-all group"
+                  className="w-32 h-44 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-2xl flex items-center justify-center hover:border-gray-400 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
                 >
                   <svg
-                    className="w-8 h-8 text-gray-400 group-hover:text-gray-500 group-hover:scale-110 transition-transform"
+                    className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -328,7 +324,7 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <h2 className="text-xl md:text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {t('allBooks')}
-                <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400">
                   {books.length}
                 </span>
               </h2>
@@ -343,7 +339,7 @@ export default function HomePage() {
                     setSelectedCategory('');
                     setCurrentPage(0);
                   }}
-                  className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-gray-50 font-medium"
+                  className="px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white font-medium"
                 >
                   <option value="author">{t('filterByAuthor')}</option>
                   <option value="category">{t('filterByCategory')}</option>
@@ -357,7 +353,7 @@ export default function HomePage() {
                     else setSelectedCategory(e.target.value);
                     setCurrentPage(0);
                   }}
-                  className="flex-1 md:flex-none min-w-[150px] px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                  className="flex-1 md:flex-none min-w-[150px] px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
                 >
                   <option value="">{filterType === 'author' ? t('allAuthors') : t('allCategories')}</option>
                   {filterType === 'author'
@@ -376,29 +372,29 @@ export default function HomePage() {
                     setCurrentPage(0);
                   }}
                   className={`px-4 py-2 rounded-xl text-sm transition-colors whitespace-nowrap ${showAll
-                    ? 'bg-gray-700 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gray-700 dark:bg-gray-600 text-white'
+                    : 'bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                     }`}
                 >
                   {t('showAll')}
                 </button>
 
-                <div className="flex items-center gap-1 ml-auto md:ml-0 border-l pl-2 md:border-l-0 md:pl-0 border-gray-200">
+                <div className="flex items-center gap-1 ml-auto md:ml-0 md:pl-0">
                   <button
                     onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                     disabled={currentPage === 0}
-                    className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
+                    className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300"
                   >
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
                     disabled={currentPage >= totalPages - 1}
-                    className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
+                    className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300"
                   >
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>

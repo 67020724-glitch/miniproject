@@ -35,30 +35,37 @@ const icons: Record<string, React.ReactNode> = {
 
 export default function StatCard({ icon, label, value, variant = 'secondary' }: StatCardProps) {
     const { t } = useLanguage();
-    const baseClasses = 'rounded-2xl p-4 flex flex-col justify-between h-full';
-    const variantClasses = {
-        primary: 'bg-gray-700 text-white',
-        secondary: 'bg-white border border-gray-200 text-gray-700',
+    const baseClasses = 'rounded-2xl p-4 md:p-5 flex flex-col justify-between h-full transition-all border shadow-sm hover:shadow-md';
+
+    const variantStyles = variant === 'primary'
+        ? { container: 'bg-indigo-600 border-indigo-700 text-white', iconBg: 'bg-white/20 text-white', label: 'text-indigo-100', value: 'text-white' }
+        : { container: 'border', iconBg: '', label: '', value: '' };
+
+    const iconColors: Record<string, string> = {
+        total: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
+        completed: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20',
+        reading: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20',
+        unread: 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20',
     };
 
     return (
-        <div className={`${baseClasses} ${variantClasses[variant]}`}>
+        <div className={`${baseClasses} ${variantStyles.container}`} style={variant === 'secondary' ? { backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)', color: 'var(--text-primary)' } : undefined}>
             {/* Header with icon and label */}
-            <div className="flex items-center gap-2 mb-2">
-                <span className={variant === 'primary' ? 'text-gray-300' : 'text-gray-500'}>
+            <div className="flex flex-col gap-3 mb-4">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center border ${variant === 'primary' ? variantStyles.iconBg : iconColors[icon]}`}>
                     {icons[icon]}
-                </span>
-                <span className={`text-sm ${variant === 'primary' ? 'text-gray-200' : 'text-gray-600'}`}>
+                </div>
+                <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${variantStyles.label}`} style={variant === 'secondary' ? { color: 'var(--text-secondary)' } : undefined}>
                     {label}
                 </span>
             </div>
 
             {/* Value */}
-            <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold tracking-tight">
-                    {value.toString().padStart(2, '0')}
+            <div className="flex items-baseline gap-1 md:gap-2">
+                <span className={`text-3xl md:text-4xl font-black tracking-tight ${variantStyles.value}`} style={variant === 'secondary' ? { color: 'var(--text-primary)' } : undefined}>
+                    {value.toString().padStart(1, '0')}
                 </span>
-                <span className={`text-sm ${variant === 'primary' ? 'text-gray-300' : 'text-gray-500'}`}>
+                <span className={`text-[10px] md:text-xs font-medium ${variant === 'primary' ? 'text-indigo-200' : ''}`} style={variant === 'secondary' ? { color: 'var(--text-muted)' } : undefined}>
                     {t('books')}
                 </span>
             </div>
