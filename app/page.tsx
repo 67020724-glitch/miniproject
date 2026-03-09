@@ -165,14 +165,22 @@ export default function HomePage() {
 
       {/* Daily Reading Goal Banner */}
       {!searchQuery.trim() && dailyGoalBooks.length > 0 && (
-        <section className="relative overflow-hidden rounded-2xl p-5 border shadow-sm border-blue-200 dark:border-blue-500/20 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20">
-          <div className="flex items-center gap-2 mb-3">
+        <section className="relative overflow-hidden rounded-2xl p-6 border shadow-sm"
+          style={{ 
+            backgroundColor: 'var(--card-bg)', 
+            borderColor: 'var(--card-border)',
+            backgroundImage: 'linear-gradient(to bottom right, var(--card-bg), var(--background))' 
+          }}>
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex items-center gap-2 mb-6 relative z-10">
             <span className="text-2xl">🎯</span>
             <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
               {t('dailyGoalTitle')}
             </h2>
           </div>
-          <div className="space-y-3">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
             {dailyGoalBooks.map(book => {
               const todayPagesRead = book.pagesRead || 0;
               const totalP = book.totalPages || 0;
@@ -180,43 +188,61 @@ export default function HomePage() {
               const progress = totalP > 0 ? Math.min(100, Math.round((todayPagesRead / totalP) * 100)) : 0;
 
               return (
-                <div key={book.id} className="flex items-center gap-3 bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 backdrop-blur-sm">
+                <div key={book.id} className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl border shadow-sm transition-all hover:shadow-md group"
+                  style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+                  
                   {book.coverUrl && (
-                    <img src={book.coverUrl} alt={book.title} className="w-10 h-14 object-cover rounded-lg shadow-sm flex-shrink-0" />
+                    <div className="w-14 h-20 flex-shrink-0 rounded-lg overflow-hidden shadow-sm group-hover:scale-105 transition-transform">
+                      <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+                    </div>
                   )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate leading-tight mb-0.5" style={{ color: 'var(--text-primary)' }}>{book.title}</p>
-                    <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                      {t('todaysGoal')}: {t('readPages').replace('{count}', String(goalPages))}
-                    </p>
+
+                  <div className="flex-1 min-w-0 w-full space-y-3">
+                    <div>
+                      <p className="text-sm font-bold truncate leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>{book.title}</p>
+                      <div className="flex items-center gap-2">
+                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" 
+                           style={{ backgroundColor: 'var(--accent-bg)', color: 'var(--accent-text)' }}>
+                           {t('todaysGoal')}
+                         </span>
+                         <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+                          {t('readPages').replace('{count}', String(goalPages))}
+                        </p>
+                      </div>
+                    </div>
+
                     {totalP > 0 && (
-                      <div className="mt-1">
-                        <div className="flex justify-between text-[10px] font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>
-                          <span>{todayPagesRead}/{totalP} {t('pages')}</span>
-                          <span>{progress}%</span>
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-[10px] font-bold" style={{ color: 'var(--text-muted)' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>{todayPagesRead}/{totalP} {t('pages')}</span>
+                          <span style={{ color: 'var(--accent-text)' }}>{progress}%</span>
                         </div>
-                        <div className="w-full rounded-full h-1.5" style={{ backgroundColor: 'var(--hover-bg)' }}>
+                        <div className="w-full rounded-full h-2" style={{ backgroundColor: 'var(--hover-bg)' }}>
                           <div
-                            className="h-1.5 rounded-full transition-all duration-300"
+                            className="h-2 rounded-full transition-all duration-700 ease-out"
                             style={{
                               width: `${progress}%`,
                               background: progress >= 100
                                 ? 'linear-gradient(90deg, #10b981, #059669)'
-                                : 'linear-gradient(90deg, #3b82f6, #6366f1)'
+                                : 'linear-gradient(90deg, #6366f1, #4f46e5)'
                             }}
                           />
                         </div>
                       </div>
                     )}
                   </div>
+
                   <button
                     onClick={() => {
                       setSelectedBookForProgress(book);
                       setIsProgressModalOpen(true);
                     }}
-                    className="flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95"
                   >
-                    📝 {t('updateProgress')}
+                    <span>{t('updateProgress')}</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
                 </div>
               );
