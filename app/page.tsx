@@ -125,9 +125,9 @@ export default function HomePage() {
   const renderSection = (title: string, sectionBooks: Book[], emptyMsg: string) => (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+        <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
           {title}
-          <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400">
+          <span className="ml-3 text-sm font-semibold px-2.5 py-0.5 rounded-full border" style={{ backgroundColor: 'var(--hover-bg)', borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}>
             {sectionBooks.length}
           </span>
         </h2>
@@ -145,8 +145,8 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-gray-300 dark:border-slate-700 p-6 text-center">
-          <p className="text-sm text-gray-400 dark:text-gray-500">{emptyMsg}</p>
+        <div className="rounded-xl border-2 border-dashed p-6 text-center" style={{ borderColor: 'var(--card-border)' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{emptyMsg}</p>
         </div>
       )}
     </section>
@@ -185,17 +185,17 @@ export default function HomePage() {
                     <img src={book.coverUrl} alt={book.title} className="w-10 h-14 object-cover rounded-lg shadow-sm flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-gray-800 dark:text-gray-100 leading-tight mb-0.5">{book.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-sm font-bold truncate leading-tight mb-0.5" style={{ color: 'var(--text-primary)' }}>{book.title}</p>
+                    <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
                       {t('todaysGoal')}: {t('readPages').replace('{count}', String(goalPages))}
                     </p>
                     {totalP > 0 && (
                       <div className="mt-1">
-                        <div className="flex justify-between text-[10px] text-gray-400 mb-0.5">
+                        <div className="flex justify-between text-[10px] font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>
                           <span>{todayPagesRead}/{totalP} {t('pages')}</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div className="w-full rounded-full h-1.5" style={{ backgroundColor: 'var(--hover-bg)' }}>
                           <div
                             className="h-1.5 rounded-full transition-all duration-300"
                             style={{
@@ -271,10 +271,12 @@ export default function HomePage() {
               <div className="snap-start shrink-0">
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="w-32 h-44 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-2xl flex items-center justify-center hover:border-gray-400 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all group"
+                  className="w-32 h-44 border-2 border-dashed rounded-2xl flex items-center justify-center transition-all group"
+                  style={{ borderColor: 'var(--card-border)', backgroundColor: 'var(--input-bg)' }}
                 >
                   <svg
-                    className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:scale-110 transition-transform"
+                    className="w-8 h-8 group-hover:scale-110 transition-transform"
+                    style={{ color: 'var(--text-muted)' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -322,9 +324,9 @@ export default function HomePage() {
           {/* All Books Section with Filters - keep for advanced browsing */}
           <section className="pt-4 border-t" style={{ borderColor: 'var(--card-border)' }}>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 {t('allBooks')}
-                <span className="ml-2 text-sm font-normal px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400">
+                <span className="ml-3 text-sm font-semibold px-2.5 py-0.5 rounded-full border" style={{ backgroundColor: 'var(--hover-bg)', borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}>
                   {books.length}
                 </span>
               </h2>
@@ -339,7 +341,8 @@ export default function HomePage() {
                     setSelectedCategory('');
                     setCurrentPage(0);
                   }}
-                  className="px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white font-medium"
+                  className="px-4 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer font-medium"
+                  style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                 >
                   <option value="author">{t('filterByAuthor')}</option>
                   <option value="category">{t('filterByCategory')}</option>
@@ -353,7 +356,8 @@ export default function HomePage() {
                     else setSelectedCategory(e.target.value);
                     setCurrentPage(0);
                   }}
-                  className="flex-1 md:flex-none min-w-[150px] px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+                  className="flex-1 md:flex-none min-w-[160px] px-4 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer font-medium"
+                  style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                 >
                   <option value="">{filterType === 'author' ? t('allAuthors') : t('allCategories')}</option>
                   {filterType === 'author'
@@ -371,31 +375,36 @@ export default function HomePage() {
                     setShowAll(!showAll);
                     setCurrentPage(0);
                   }}
-                  className={`px-4 py-2 rounded-xl text-sm transition-colors whitespace-nowrap ${showAll
-                    ? 'bg-gray-700 dark:bg-gray-600 text-white'
-                    : 'bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800'
+                  className={`px-5 py-2 rounded-xl text-sm transition-all whitespace-nowrap shadow-sm hover:shadow-md active:scale-95 font-medium ${showAll
+                    ? 'text-white'
+                    : 'border hover:bg-[var(--hover-bg)]'
                     }`}
+                  style={{ 
+                    backgroundColor: showAll ? 'var(--active-bg)' : 'var(--card-bg)', 
+                    borderColor: 'var(--card-border)',
+                    color: showAll ? 'var(--active-text)' : 'var(--text-secondary)'
+                  }}
                 >
                   {t('showAll')}
                 </button>
 
-                <div className="flex items-center gap-1 ml-auto md:ml-0 md:pl-0">
+                <div className="flex items-center gap-1.5 ml-auto md:ml-0 md:pl-0">
                   <button
                     onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                     disabled={currentPage === 0}
-                    className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300"
+                    className="w-10 h-10 rounded-full border flex items-center justify-center transition-all hover:shadow-md active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed bg-[var(--card-bg)] text-[var(--text-secondary)] border-[var(--card-border)]"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
                     disabled={currentPage >= totalPages - 1}
-                    className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300"
+                    className="w-10 h-10 rounded-full border flex items-center justify-center transition-all hover:shadow-md active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed bg-[var(--card-bg)] text-[var(--text-secondary)] border-[var(--card-border)]"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
                 </div>

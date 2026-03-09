@@ -236,7 +236,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         <div className="relative z-50" aria-labelledby="edit-modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 transition-opacity"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
@@ -244,22 +244,24 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div
-                        className="relative transform bg-white rounded-2xl md:rounded-[2.5rem] text-left shadow-xl transition-all w-full max-w-md my-4 md:my-8 p-5 md:p-8"
+                        className="relative transform bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] text-left shadow-xl transition-all w-full max-w-md my-4 md:my-8 p-5 md:p-8 border border-gray-200 dark:border-slate-800"
+                        style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('editBookTitle')}</h2>
+                        <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>{t('editBookTitle')}</h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Title */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>
                                     {t('titleLabel')}
                                 </label>
                                 <input
                                     type="text"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                     placeholder={t('titlePlaceholder')}
                                     required
                                 />
@@ -267,21 +269,22 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                             {/* Author */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>
                                     {t('authorLabel')}
                                 </label>
                                 <input
                                     type="text"
                                     value={author}
                                     onChange={(e) => setAuthor(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                     placeholder={t('authorPlaceholder')}
                                 />
                             </div>
 
                             {/* Category */}
                             <div className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>
                                     {t('categoryLabel')}
                                 </label>
                                 <div className="relative">
@@ -294,7 +297,8 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                         }}
                                         onFocus={() => setShowCategoryDropdown(true)}
                                         onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                        className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                         placeholder={t('categoryPlaceholder')}
                                     />
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
@@ -302,14 +306,14 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                     </div>
                                 </div>
                                 {showCategoryDropdown && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
                                         {allCategorySuggestions
                                             .filter(c => c.toLowerCase().includes(category.toLowerCase()))
                                             .map((cat, idx) => (
                                                 <button
                                                     key={idx}
                                                     type="button"
-                                                    className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-sm text-gray-700"
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-slate-700 focus:bg-gray-50 dark:focus:bg-slate-700 focus:outline-none text-sm text-gray-700 dark:text-gray-200"
                                                     onMouseDown={(e) => {
                                                         e.preventDefault(); // Prevent blur before click
                                                         setCategory(cat);
@@ -325,7 +329,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                             {/* Rating */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>
                                     {t('ratingLabel')}
                                 </label>
                                 <div className="flex gap-1">
@@ -334,7 +338,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                             key={star}
                                             type="button"
                                             onClick={() => setRating(rating === star ? 0 : star)}
-                                            className={`w-8 h-8 transition-colors ${rating >= star ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'}`}
+                                            className={`w-8 h-8 transition-colors ${rating >= star ? 'text-yellow-400' : 'text-gray-300 dark:text-slate-600 hover:text-yellow-200 dark:hover:text-yellow-500'}`}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
                                                 <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
@@ -346,13 +350,13 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                             {/* Cover Image Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>
                                     {t('coverLabel')}
                                 </label>
 
                                 <div className="space-y-3">
                                     {/* File Input */}
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors relative">
+                                    <div className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl p-4 text-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors relative">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -384,10 +388,10 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                     {/* Divider with Text */}
                                     <div className="relative">
                                         <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-gray-200"></div>
+                                            <div className="w-full border-t border-gray-200 dark:border-slate-700"></div>
                                         </div>
                                         <div className="relative flex justify-center text-sm">
-                                            <span className="px-2 bg-white text-gray-500">{t('orUrl')}</span>
+                                            <span className="px-3 font-medium transition-colors" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-muted)' }}>{t('orUrl')}</span>
                                         </div>
                                     </div>
 
@@ -406,7 +410,8 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                                 setPreviewUrl(`https://placehold.co/150x200/374151/ffffff?text=${encodeURIComponent(title.charAt(0).toUpperCase() || 'B')}`);
                                             }
                                         }}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                        className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                        style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                         placeholder="https://example.com/cover.jpg"
                                     />
                                 </div>
@@ -414,13 +419,14 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                             {/* Status */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>
                                     {t('statusLabel')}
                                 </label>
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value as BookStatus)}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                                    className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                 >
                                     <option value="unread">{t('unread')}</option>
                                     <option value="reading">{t('reading')}</option>
@@ -431,13 +437,14 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                             {/* Source */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>
                                     {t('sourceLabel')}
                                 </label>
                                 <select
                                     value={source}
                                     onChange={(e) => setSource(e.target.value as BookSource | '')}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
+                                    className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                 >
                                     <option value="">{t('sourcePlaceholder')}</option>
                                     <option value="physical">{t('sourcePhysical')}</option>
@@ -449,14 +456,15 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                 {/* Source URL / Reference */}
                                 {source && (
                                     <div className="mt-2">
-                                        <label className="block text-xs text-gray-500 mb-1">
+                                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
                                             {t('sourceUrlLabel')}
                                         </label>
                                         <input
                                             type="text"
                                             value={sourceUrl}
                                             onChange={(e) => setSourceUrl(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                            style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                             placeholder={t('sourceUrlPlaceholder')}
                                         />
                                     </div>
@@ -464,13 +472,13 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                             </div>
 
                             {/* Reading Goal & Progress */}
-                            <div className="p-4 bg-gray-50 rounded-xl space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            <div className="p-5 rounded-2xl space-y-4 border shadow-sm" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+                                <h3 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--accent-text)' }}>
                                     🎯 {t('progressLabel')}
                                 </h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs text-gray-500 mb-1">
+                                        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                                             {t('totalPagesLabel')}
                                         </label>
                                         <input
@@ -478,12 +486,13 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                             min="1"
                                             value={totalPages}
                                             onChange={(e) => setTotalPages(e.target.value ? parseInt(e.target.value) : '')}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                            style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                             placeholder="300"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-gray-500 mb-1">
+                                        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                                             {t('pagesPerDayLabel')}
                                         </label>
                                         <input
@@ -491,13 +500,14 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                             min="1"
                                             value={pagesPerDay}
                                             onChange={(e) => setPagesPerDay(e.target.value ? parseInt(e.target.value) : '')}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                            style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                             placeholder="20"
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-gray-500 mb-1">
+                                    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                                         {t('pagesReadLabel')}
                                     </label>
                                     <input
@@ -506,25 +516,26 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                         max={totalPages ? Number(totalPages) : undefined}
                                         value={pagesRead}
                                         onChange={(e) => setPagesRead(e.target.value ? parseInt(e.target.value) : '')}
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                                        style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--text-primary)' }}
                                         placeholder="0"
                                     />
                                 </div>
                                 {/* Progress Bar */}
                                 {totalPages && Number(totalPages) > 0 && (
                                     <div>
-                                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                                             <span>{pagesRead || 0} / {totalPages} {t('pages')}</span>
                                             <span>{progressPercent}%</span>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div className="w-full rounded-full h-3 transition-colors" style={{ backgroundColor: 'var(--hover-bg)' }}>
                                             <div
-                                                className="h-2.5 rounded-full transition-all duration-300"
+                                                className="h-3 rounded-full transition-all duration-300 shadow-sm"
                                                 style={{
                                                     width: `${progressPercent}%`,
                                                     background: progressPercent >= 100
-                                                        ? 'linear-gradient(90deg, #10b981, #059669)'
-                                                        : 'linear-gradient(90deg, #3b82f6, #6366f1)'
+                                                        ? 'linear-gradient(90deg, #10b981, #34d399)'
+                                                        : 'linear-gradient(90deg, #6366f1, #818cf8)'
                                                 }}
                                             />
                                         </div>
@@ -538,23 +549,25 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                                 )}
                             </div>
 
-                            {/* Buttons */}
-                            <div className="flex gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    disabled={isUploading}
-                                    className="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
-                                >
-                                    {t('cancel')}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isUploading}
-                                    className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
+                             {/* Buttons */}
+                             <div className="flex gap-4 pt-6">
+                                 <button
+                                     type="button"
+                                     onClick={onClose}
+                                     disabled={isUploading}
+                                     className="flex-[4] px-6 py-4 border rounded-2xl font-bold transition-all hover:shadow-lg disabled:opacity-50 active:scale-95"
+                                     style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+                                 >
+                                     {t('cancel')}
+                                 </button>
+                                 <button
+                                     type="submit"
+                                     disabled={isUploading}
+                                     className="flex-[6] px-6 py-4 rounded-2xl font-bold transition-all hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95 shadow-md"
+                                     style={{ backgroundColor: 'var(--active-bg)', color: 'var(--active-text)' }}
+                                 >
                                     {isUploading && (
-                                        <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>

@@ -107,7 +107,7 @@ export default function AuthForm({
         <div className="w-full max-w-md mx-auto">
             {/* Error Message */}
             {error && (
-                <div className="mb-4 p-3 rounded-xl text-sm flex items-center gap-2 bg-red-50 border border-red-100 text-red-600">
+                <div className="mb-4 p-3 rounded-xl text-sm flex items-center gap-2 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400">
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -117,7 +117,7 @@ export default function AuthForm({
 
             {mode === 'forgot' && forgotEmailSent ? (
                 <div className="text-center py-6">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-50">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-50 dark:bg-green-500/10">
                         <svg className="w-8 h-8" fill="none" stroke="#22c55e" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
                         </svg>
@@ -291,7 +291,7 @@ export default function AuthForm({
                                     <div className="w-full" style={{ borderTop: '1px solid var(--card-border)' }} />
                                 </div>
                                 <div className="relative flex justify-center text-xs">
-                                    <span className="px-3" style={{ backgroundColor: 'var(--background)', color: 'var(--text-muted)' }}>
+                                    <span className="px-3" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-muted)' }}>
                                         {t('orContinueWith')}
                                     </span>
                                 </div>

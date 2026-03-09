@@ -4,35 +4,37 @@
 
 @layer base {
   :root {
-    --background: #F8FAFC;
-    --foreground: #1E293B;
+    --background: #F8FAFC; /* Slate 50 - Very clean background */
+    --foreground: #020617; /* Slate 950 */
     --card-bg: #FFFFFF;
-    --card-border: #E2E8F0;
+    --card-border: #F1F5F9; /* Slate 100 */
     --sidebar-bg: #FFFFFF;
     --topbar-bg: #FFFFFF;
     --input-bg: #FFFFFF;
-    --input-border: #E2E8F0;
-    --text-primary: #1E293B;
-    --text-secondary: #64748B;
-    --text-muted: #94A3B8;
+    --input-border: #E2E8F0; /* Slate 200 */
+    --text-primary: #0F172A; /* Slate 900 */
+    --text-secondary: #334155; /* Slate 700 - Darker for better contrast */
+    --text-muted: #64748B; /* Slate 500 - Darker for better contrast */
     --hover-bg: #F1F5F9;
-    --active-bg: #EEF2FF;
-    --active-text: #4F46E5;
+    --active-bg: #6366F1; /* Indigo 600 - Vibrant primary */
+    --active-text: #FFFFFF;
+    --accent-bg: #EEF2FF; /* Light indigo for secondary active */
+    --accent-text: #4F46E5;
   }
 
   :root.dark {
-    --background: #0F172A;
-    --foreground: #F8FAFC;
-    --card-bg: #1E293B;
-    --card-border: #334155;
-    --sidebar-bg: #1E293B;
-    --topbar-bg: #1E293B;
-    --input-bg: #1E293B;
-    --input-border: #334155;
+    --background: #020617; /* Slate 950 */
+    --foreground: #F8FAFC; /* Slate 50 */
+    --card-bg: #0F172A; /* Slate 900 */
+    --card-border: #1E293B; /* Slate 800 */
+    --sidebar-bg: #0F172A;
+    --topbar-bg: #0F172A;
+    --input-bg: #1E293B; /* Slate 800 */
+    --input-border: #334155; /* Slate 700 */
     --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
-    --hover-bg: #334155;
+    --text-secondary: #94A3B8; /* Slate 400 */
+    --text-muted: #64748B; /* Slate 500 */
+    --hover-bg: #1E293B;
     --active-bg: #312E81;
     --active-text: #818CF8;
   }

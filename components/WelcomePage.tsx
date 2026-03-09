@@ -58,13 +58,13 @@ export default function WelcomePage() {
                 <div className="flex flex-col gap-4 w-full max-w-xs animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <button
                         onClick={() => setView('register')}
-                        className="w-full py-4 bg-[#4F46E5] text-white rounded-2xl hover:bg-indigo-700 transition-all duration-200 font-bold text-lg shadow-lg shadow-indigo-100 hover:shadow-indigo-200"
+                        className="w-full py-4 bg-[#4F46E5] text-white rounded-2xl hover:bg-indigo-700 transition-all duration-200 font-bold text-lg shadow-lg shadow-indigo-100 dark:shadow-none hover:shadow-indigo-200"
                     >
                         {t('getStarted')}
                     </button>
                     <button
                         onClick={() => setView('login')}
-                        className="w-full py-4 bg-white text-indigo-700 rounded-2xl hover:bg-gray-50 transition-all duration-200 font-medium text-lg border border-gray-200 shadow-sm"
+                        className="w-full py-4 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all duration-200 font-medium text-lg border border-gray-200 dark:border-slate-700 shadow-sm"
                     >
                         {t('loginButton')}
                     </button>
@@ -74,13 +74,13 @@ export default function WelcomePage() {
                     <div className="mb-6 flex items-center gap-2">
                         <button
                             onClick={() => setView('welcome')}
-                            className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-gray-500 dark:text-gray-400"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <h2 className="text-xl font-semibold text-gray-700">
+                        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
                             {view === 'login' ? t('loginTitle') : t('registerTitle')}
                         </h2>
                     </div>

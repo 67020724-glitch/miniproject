@@ -97,14 +97,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 {/* Logo */}
                 <div className="p-6 pb-8 flex justify-between items-center">
                     <h1 className="text-2xl font-light italic" style={{ color: 'var(--text-muted)' }}>
-                        Story<span className="font-normal" style={{ color: 'var(--text-primary)' }}>Nest</span>
-                        <span className="text-sm align-top" style={{ color: 'var(--text-muted)' }}>+</span>
+                        Story<span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Nest</span>
+                        <span className="text-sm align-top" style={{ color: 'var(--text-primary)' }}>+</span>
                     </h1>
                     {/* Close Button (Mobile Only) */}
                     <button
                         onClick={onClose}
-                        className="md:hidden w-10 h-10 -ml-2 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
-                        style={{ color: 'var(--text-muted)' }}
+                        className="md:hidden w-10 h-10 -ml-2 rounded-lg flex items-center justify-center transition-colors"
+                        style={{ color: 'var(--text-muted)', backgroundColor: 'var(--hover-bg)' }}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

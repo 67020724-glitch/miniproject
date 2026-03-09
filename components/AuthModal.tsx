@@ -18,8 +18,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
             <div
-                className="absolute inset-0"
-                style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                 onClick={onClose}
             />
 

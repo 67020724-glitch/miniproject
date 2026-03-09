@@ -123,9 +123,9 @@ export default function LibraryPage() {
                                             <div className="flex justify-between text-[10px] md:text-xs font-black uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                                                 <span>{progress}%</span>
                                             </div>
-                                            <div className="h-2 w-full bg-[#E5E7EB] dark:bg-slate-700 rounded-full overflow-hidden p-0.5 border" style={{ borderColor: 'var(--card-border)' }}>
+                                            <div className="h-2 w-full bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-transparent">
                                                 <div
-                                                    className="h-full bg-[#4F46E5] dark:bg-indigo-500 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                                                    className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-1000 ease-out shadow-sm"
                                                     style={{ width: `${progress}%` }}
                                                 />
                                             </div>
@@ -137,7 +137,8 @@ export default function LibraryPage() {
                     })}
 
                     {books.filter(book => book.status === 'reading').length === 0 && (
-                        <div className="col-span-full text-center py-20 bg-gray-50/50 dark:bg-slate-800/30 rounded-[3rem] border-2 border-dashed flex flex-col items-center" style={{ borderColor: 'var(--card-border)' }}>
+                        <div className="col-span-full text-center py-20 rounded-[3rem] border-2 border-dashed flex flex-col items-center" 
+                            style={{ backgroundColor: 'var(--hover-bg)', borderColor: 'var(--card-border)' }}>
                             <div className="w-20 h-20 rounded-3xl shadow-sm border flex items-center justify-center text-4xl mb-6" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
                                 📖
                             </div>
