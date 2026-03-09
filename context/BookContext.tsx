@@ -28,6 +28,8 @@ interface BookContextType {
     toggleFavorite: (id: string) => Promise<void>;
     getFavoriteBooks: () => Book[];
     isLoading: boolean;
+    getReadingLogByDate: (date: string) => Promise<{ bookId: string; title: string; pagesRead: number; completed?: boolean; coverUrl?: string }[]>;
+    saveReadingLog: (bookId: string, pages: number) => Promise<void>;
 }
 
 const BookContext = createContext<BookContextType | undefined>(undefined);
@@ -470,6 +472,98 @@ export function BookProvider({ children }: { children: ReactNode }) {
         return books.filter((book) => book.isFavorite);
     };
 
+    const getReadingLogByDate = async (date: string) => {
+        if (!user) return [];
+        try {
+            // Fetch logs first
+            const { data: logData, error: logError } = await supabase
+                .from('reading_logs')
+                .select('book_id, pages_read')
+                .eq('user_id', user.id)
+                .eq('date', date);
+
+            if (logError) {
+                // If it's a 404/PGRST116, the table might not exist yet
+                // We'll log it clearly but still proceed with local book status check
+                console.warn('Reading logs fetch error (Table might not exist):', logError.message || logError);
+            }
+
+            // Also check for books completed on this date from the local books state
+            const completedBooksOnDate = books.filter(b => {
+                if (!b.completedAt) return false;
+                const completedDate = new Date(b.completedAt).toISOString().split('T')[0];
+                return completedDate === date;
+            });
+
+            // Combine data: Map logs to include book titles from local state
+            const logs = (logData || []).map((item: any) => {
+                const bookInfo = books.find(b => b.id === item.book_id);
+                const isCompleted = !!(bookInfo?.status === 'completed' && 
+                                   bookInfo?.completedAt && 
+                                   new Date(bookInfo.completedAt).toISOString().split('T')[0] === date);
+                
+                return {
+                    bookId: item.book_id as string,
+                    title: bookInfo?.title || 'Unknown Book',
+                    pagesRead: (item.pages_read || 0) as number,
+                    completed: isCompleted,
+                    coverUrl: bookInfo?.coverUrl
+                };
+            });
+
+            // Add completed books that are missing from logs (back-fill)
+            completedBooksOnDate.forEach(cb => {
+                if (!logs.some(l => l.bookId === cb.id)) {
+                    logs.push({
+                        bookId: cb.id,
+                        title: cb.title,
+                        pagesRead: cb.totalPages || cb.pagesRead || 0,
+                        completed: true,
+                        coverUrl: cb.coverUrl
+                    });
+                }
+            });
+
+            return logs;
+        } catch (error) {
+            console.error('Critical error in getReadingLogByDate:', error);
+            return [];
+        }
+    };
+
+    const saveReadingLog = async (bookId: string, pages: number) => {
+        if (!user || pages <= 0) return;
+        const date = new Date().toISOString().split('T')[0];
+        try {
+            // First try to find if there's an existing log for today
+            const { data: existing } = await supabase
+                .from('reading_logs')
+                .select('id, pages_read')
+                .eq('user_id', user.id)
+                .eq('book_id', bookId)
+                .eq('date', date)
+                .single();
+
+            if (existing) {
+                await supabase
+                    .from('reading_logs')
+                    .update({ pages_read: existing.pages_read + pages })
+                    .eq('id', existing.id);
+            } else {
+                await supabase
+                    .from('reading_logs')
+                    .insert({
+                        user_id: user.id,
+                        book_id: bookId,
+                        pages_read: pages,
+                        date: date
+                    });
+            }
+        } catch (error) {
+            console.error('Error saving log:', error);
+        }
+    };
+
     return (
         <BookContext.Provider
             value={{
@@ -490,7 +584,9 @@ export function BookProvider({ children }: { children: ReactNode }) {
                 authors,
                 toggleFavorite,
                 getFavoriteBooks,
-                isLoading
+                isLoading,
+                getReadingLogByDate,
+                saveReadingLog
             }}
         >
             {children}

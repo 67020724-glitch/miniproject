@@ -38,7 +38,7 @@ export default function StatCard({ icon, label, value, variant = 'secondary' }: 
     const baseClasses = 'rounded-2xl p-4 md:p-5 flex flex-col justify-between h-full transition-all border shadow-sm hover:shadow-md';
 
     const variantStyles = variant === 'primary'
-        ? { container: 'bg-indigo-600 border-indigo-700 text-white', iconBg: 'bg-white/20 text-white', label: 'text-indigo-100', value: 'text-white' }
+        ? { container: 'bg-indigo-50 border-indigo-100 text-indigo-700', iconBg: 'bg-white text-indigo-600 border-indigo-100', label: 'text-indigo-600', value: 'text-indigo-900' }
         : { container: 'border', iconBg: '', label: '', value: '' };
 
     const iconColors: Record<string, string> = {
@@ -55,14 +55,14 @@ export default function StatCard({ icon, label, value, variant = 'secondary' }: 
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center border ${variant === 'primary' ? variantStyles.iconBg : iconColors[icon]}`}>
                     {icons[icon]}
                 </div>
-                <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${variantStyles.label}`} style={variant === 'secondary' ? { color: 'var(--text-secondary)' } : undefined}>
+                <span className={`text-[10px] md:text-xs font-semibold uppercase tracking-widest ${variantStyles.label}`} style={variant === 'secondary' ? { color: 'var(--text-secondary)' } : undefined}>
                     {label}
                 </span>
             </div>
 
             {/* Value */}
             <div className="flex items-baseline gap-1 md:gap-2">
-                <span className={`text-3xl md:text-4xl font-black tracking-tight ${variantStyles.value}`} style={variant === 'secondary' ? { color: 'var(--text-primary)' } : undefined}>
+                <span className={`text-3xl md:text-4xl font-bold tracking-tight ${variantStyles.value}`} style={variant === 'secondary' ? { color: 'var(--text-primary)' } : undefined}>
                     {value.toString().padStart(1, '0')}
                 </span>
                 <span className={`text-[10px] md:text-xs font-medium ${variant === 'primary' ? 'text-indigo-200' : ''}`} style={variant === 'secondary' ? { color: 'var(--text-muted)' } : undefined}>

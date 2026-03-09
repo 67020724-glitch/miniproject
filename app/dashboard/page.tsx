@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useBooks } from '@/context/BookContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { Book, BookStatus } from '@/types/book';
 import UpdateProgressModal from '@/components/UpdateProgressModal';
 
 export default function Dashboard() {
-    const { books, getBooksByStatus, updateBook } = useBooks();
+    const { books, getBooksByStatus, updateBook, getReadingLogByDate } = useBooks();
     const { t, language } = useLanguage();
+    const router = useRouter();
 
     // Yearly Goal
     const [yearlyGoal, setYearlyGoal] = useState<number>(30);
@@ -16,6 +18,10 @@ export default function Dashboard() {
     const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
     const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
     const [selectedBookForProgress, setSelectedBookForProgress] = useState<Book | null>(null);
+
+    const [historyDate, setHistoryDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [historyLogs, setHistoryLogs] = useState<{ bookId: string; title: string; pagesRead: number; completed?: boolean; coverUrl?: string }[]>([]);
+    const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
     useEffect(() => {
         const savedGoal = localStorage.getItem('storynest-yearly-goal');
@@ -25,6 +31,16 @@ export default function Dashboard() {
             setTempGoal(val);
         }
     }, []);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            setIsHistoryLoading(true);
+            const logs = await getReadingLogByDate(historyDate);
+            setHistoryLogs(logs);
+            setIsHistoryLoading(false);
+        };
+        fetchHistory();
+    }, [historyDate, getReadingLogByDate]);
 
     const saveGoal = () => {
         setYearlyGoal(tempGoal);
@@ -122,9 +138,21 @@ export default function Dashboard() {
 
     return (
         <div className="max-w-7xl mx-auto flex flex-col gap-6 md:gap-10 pb-20 animate-fade-in px-2 sm:px-0">
-            <header className="px-2 md:px-0">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('dashboard')}</h1>
-                <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-secondary)' }}>{t('dashboardDesc') || 'Overview of your reading journey'}</p>
+            <header className="px-2 md:px-0 flex items-center gap-4">
+                <button
+                    onClick={() => router.back()}
+                    className="p-2 rounded-xl transition-all hover:scale-110 active:scale-90"
+                    style={{ color: 'var(--text-secondary)', backgroundColor: 'var(--hover-bg)' }}
+                    title={t('back')}
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('dashboard')}</h1>
+                    <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-secondary)' }}>{t('dashboardDesc') || 'Overview of your reading journey'}</p>
+                </div>
             </header>
 
             {/* 1. Reading Goal Section */}
@@ -167,10 +195,10 @@ export default function Dashboard() {
                             </div>
                             <span className="text-xs font-semibold px-3 py-1.5 rounded-full border bg-white/50 dark:bg-indigo-500/10 border-white/50 dark:border-indigo-500/20" style={{ color: 'var(--text-secondary)' }}>{booksReadCount >= yearlyGoal ? t('goalCompletedYear') : t('remainingBooks').replace('{count}', String(yearlyGoal - booksReadCount))}</span>
                         </div>
-                        <div className="h-4 w-full bg-[#E5E7EB] dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-4 w-full bg-slate-100 dark:bg-indigo-500/10 rounded-full overflow-hidden shadow-inner border border-slate-200/50 dark:border-indigo-500/10">
                             <div
-                                className="h-full rounded-full bg-[#4F46E5] dark:bg-indigo-500 transition-all duration-1000 ease-out shadow-sm"
-                                style={{ width: `${goalProgress}%` }}
+                                className="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                                style={{ width: `${goalProgress}%`, backgroundColor: '#6366F1' }}
                             />
                         </div>
                     </div>
@@ -228,7 +256,7 @@ export default function Dashboard() {
                             </div>
                             <h3 className="font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1" style={{ color: 'var(--text-secondary)' }}>{item.label}</h3>
                             <p className="text-3xl md:text-4xl font-black mb-6" style={{ color: 'var(--text-primary)' }}>{item.count} <span className="text-sm font-normal" style={{ color: 'var(--text-muted)' }}>{t('books')}</span></p>
-                            <div className="h-2 w-full bg-[#F1F5F9] dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-2 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--hover-bg)' }}>
                                 <div className={`h-full ${accentBar[item.accent]} transition-all duration-1000`} style={{ width: `${percent}%` }} />
                             </div>
                         </div>
@@ -266,8 +294,8 @@ export default function Dashboard() {
                                                         <span style={{ color: 'var(--text-secondary)' }}>{progress}%</span>
                                                         <span className="hidden xs:inline">{book.pagesRead || 0} / {book.totalPages || '?'} {t('pages')}</span>
                                                     </div>
-                                                    <div className="h-2 w-full bg-[#E5E7EB] dark:bg-slate-700 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-[#4F46E5] dark:bg-indigo-500 transition-all duration-700" style={{ width: `${progress}%` }} />
+                                                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-transparent">
+                                                        <div className="h-full bg-indigo-500 dark:bg-indigo-400 transition-all duration-700 shadow-sm" style={{ width: `${progress}%` }} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -306,9 +334,9 @@ export default function Dashboard() {
                                 </div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>{t('today')}</p>
                                 <p className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>
-                                    {dailyPageGoalTarget} <span className="text-sm font-normal" style={{ color: 'var(--text-muted)' }}>{t('pages')} / {language === 'th' ? 'วัน' : 'day'}</span>
+                                    {historyDate === new Date().toISOString().split('T')[0] ? historyLogs.reduce((sum, l) => sum + l.pagesRead, 0) : '?'} <span className="text-sm font-normal" style={{ color: 'var(--text-muted)' }}>/ {dailyPageGoalTarget} {t('pages')}</span>
                                 </p>
-                                <p className="text-[10px] mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>{t('dailyGoal')}</p>
+                                <p className="text-[10px] mt-1 font-medium" style={{ color: 'var(--text-muted)' }}>{t('readingProgress')}</p>
                             </div>
                             <div className="p-6 rounded-2xl shadow-sm overflow-hidden relative group transition-all hover:shadow-md border"
                                 style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
@@ -338,6 +366,118 @@ export default function Dashboard() {
                             </div>
                         </div>
 
+                        {/* 📊 Reading History / Lookback */}
+                        <div className="p-6 md:p-8 rounded-2xl border shadow-sm relative overflow-hidden group"
+                            style={{ 
+                                backgroundColor: 'var(--card-bg)', 
+                                borderColor: 'var(--card-border)'
+                            }}>
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                                <div>
+                                    <h3 className="text-xl font-black mb-1" style={{ color: 'var(--text-primary)' }}>{t('viewOtherDays')}</h3>
+                                    <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{t('selectDate')}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={() => {
+                                            const d = new Date(historyDate);
+                                            d.setDate(d.getDate() - 1);
+                                            setHistoryDate(d.toISOString().split('T')[0]);
+                                        }}
+                                        className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors border"
+                                        style={{ borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <input 
+                                        type="date" 
+                                        value={historyDate}
+                                        onChange={(e) => setHistoryDate(e.target.value)}
+                                        className="px-4 py-2 rounded-xl border font-bold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        style={{ backgroundColor: 'var(--background)', borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            const d = new Date(historyDate);
+                                            d.setDate(d.getDate() + 1);
+                                            const today = new Date().toISOString().split('T')[0];
+                                            const nextDate = d.toISOString().split('T')[0];
+                                            if (nextDate <= today) {
+                                                setHistoryDate(nextDate);
+                                            }
+                                        }}
+                                        className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors border disabled:opacity-30"
+                                        style={{ borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+                                        disabled={historyDate === new Date().toISOString().split('T')[0]}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {isHistoryLoading ? (
+                                <div className="flex justify-center py-10">
+                                    <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                                </div>
+                            ) : historyLogs.length > 0 ? (
+                                <div className="space-y-4">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest px-1" style={{ color: 'var(--text-muted)' }}>
+                                        {t('pagesReadOn').replace('{date}', historyDate)}
+                                    </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {historyLogs.map((log, i) => (
+                                            <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-indigo-500/20 bg-transparent"
+                                                style={{ 
+                                                    // Only override with variables if we want to ensure theme sync, 
+                                                    // but here we use specific classes for better light mode contrast
+                                                }}>
+                                                <div className="flex items-center gap-3 overflow-hidden">
+                                                    {log.coverUrl ? (
+                                                        <div className="w-8 h-10 flex-shrink-0 rounded shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+                                                            <img src={log.coverUrl} className="w-full h-full object-cover" alt={log.title} />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-xs ring-1 ring-indigo-200 dark:ring-indigo-800/50">
+                                                            {log.title.charAt(0)}
+                                                        </div>
+                                                    )}
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-sm font-bold truncate max-w-[120px] sm:max-w-[200px]" style={{ color: 'var(--text-primary)' }}>{log.title}</span>
+                                                        {log.completed && (
+                                                            <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-500 flex items-center gap-0.5">
+                                                                <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
+                                                                {t('completed')}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-lg font-black text-indigo-700 dark:text-indigo-400 leading-none">{log.pagesRead}</span>
+                                                    <span className="text-[10px] uppercase font-bold tracking-tighter mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('pages')}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="pt-4 mt-4 border-t border-dashed" style={{ borderColor: 'var(--card-border)' }}>
+                                        <div className="flex justify-between items-center px-1">
+                                            <span className="text-xs font-bold uppercase" style={{ color: 'var(--text-secondary)' }}>Total</span>
+                                            <span className="text-xl font-black text-indigo-700 dark:text-indigo-400">
+                                                {historyLogs.reduce((sum, l) => sum + l.pagesRead, 0)} <span className="text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{t('pages')}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-12 rounded-2xl bg-gray-50/50 dark:bg-slate-800/10 border-2 border-dashed border-gray-100 dark:border-slate-800">
+                                    <p className="text-sm font-bold opacity-40" style={{ color: 'var(--text-muted)' }}>{t('noDataForDate')}</p>
+                                </div>
+                            )}
+                        </div>
+
                         {/* General Library Distribution */}
                         <div className="p-8 rounded-2xl border shadow-sm mb-8 relative overflow-hidden group"
                             style={{ 
@@ -359,32 +499,15 @@ export default function Dashboard() {
                                         <span>{t('achievementPageSeeker')}</span>
                                         <span className="text-indigo-600 dark:text-indigo-400">{Math.min(100, Math.round((totalPagesAccumulated / 1000) * 100))}%</span>
                                     </div>
-                                    <div className="h-2.5 w-full bg-[#E5E7EB] dark:bg-slate-700 rounded-full overflow-hidden p-0.5">
-                                        <div className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{ width: `${Math.min(100, (totalPagesAccumulated / 1000) * 100)}%` }} />
+                                    <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden border border-slate-200/50 dark:border-transparent">
+                                        <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{ width: `${Math.min(100, Math.round((totalPagesAccumulated / 1000) * 100))}%` }} />
                                     </div>
                                     <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>{t('readPages').replace('{count}', String(Math.max(0, 1000 - totalPagesAccumulated)))} {t('toNextGoal')}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="p-6 rounded-2xl shadow-sm text-center border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-                                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>{t('totalBooks')}</p>
-                                <p className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{totalBooks}</p>
-                            </div>
-                            <div className="p-6 rounded-2xl shadow-sm text-center border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-                                <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">{t('completed')}</p>
-                                <p className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{finishedBooksCount}</p>
-                            </div>
-                            <div className="p-6 rounded-2xl shadow-sm text-center border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-                                <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">{t('reading')}</p>
-                                <p className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{readingBooks.length}</p>
-                            </div>
-                            <div className="p-6 rounded-2xl shadow-sm text-center border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-                                <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-1">{t('unread')}</p>
-                                <p className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{unreadBooksCount}</p>
-                            </div>
-                        </div>
+
                     </section>
                 </div>
 
@@ -409,9 +532,9 @@ export default function Dashboard() {
                                                 {ach.requirement}
                                             </p>
                                             {!ach.condition && (
-                                                <div className="w-24 h-1 bg-[#E2E8F0] dark:bg-slate-700 rounded-full mt-1 overflow-hidden">
+                                                <div className="w-24 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full mt-1.5 overflow-hidden border border-slate-200/30 dark:border-transparent">
                                                     <div
-                                                        className="h-full bg-[#4F46E5] dark:bg-indigo-500 transition-all duration-500"
+                                                        className="h-full bg-indigo-500 dark:bg-indigo-400 transition-all duration-500"
                                                         style={{ width: `${Math.min(100, (ach.currentValue / ach.neededValue) * 100)}%` }}
                                                     />
                                                 </div>
@@ -496,7 +619,7 @@ export default function Dashboard() {
                                     type="number"
                                     value={tempGoal}
                                     onChange={(e) => setTempGoal(parseInt(e.target.value) || 0)}
-                                    className="w-full rounded-[2rem] px-8 py-10 text-6xl font-black text-center focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all border"
+                                    className="w-full rounded-[2rem] px-8 py-10 text-6xl font-bold text-center focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all border"
                                     style={{ 
                                         backgroundColor: 'var(--background)', 
                                         borderColor: 'var(--card-border)',
@@ -505,14 +628,15 @@ export default function Dashboard() {
                                     placeholder="30"
                                     autoFocus
                                 />
-                                <div className="absolute right-8 top-1/2 -translate-y-1/2 font-bold uppercase tracking-widest text-sm pointer-events-none" style={{ color: 'var(--text-muted)' }}>
+                                <div className="absolute right-8 top-1/2 -translate-y-1/2 font-semibold uppercase tracking-widest text-sm pointer-events-none" style={{ color: 'var(--text-muted)' }}>
                                     {t('books')}
                                 </div>
                             </div>
 
                             <button
                                 onClick={saveGoal}
-                                className="w-full bg-[#4F46E5] hover:bg-indigo-700 text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="w-full font-semibold py-5 rounded-[1.5rem] shadow-xl transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                                style={{ backgroundColor: 'var(--active-bg)', color: 'var(--active-text)' }}
                             >
                                 {t('saveGoal')}
                             </button>

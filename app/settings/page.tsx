@@ -1,15 +1,28 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme();
     const { language, setLanguage, t } = useLanguage();
+    const router = useRouter();
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('settingsTitle')}</h1>
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={() => router.back()}
+                    className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-gray-500 dark:text-gray-400 border border-transparent hover:border-gray-200 dark:hover:border-slate-700"
+                    title={t('back')}
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('settingsTitle')}</h1>
+            </div>
 
             <div className="rounded-2xl border p-6 space-y-6" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
                 <div>

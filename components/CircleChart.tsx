@@ -39,7 +39,7 @@ export default function CircleChart({ segments, total }: CircleChartProps) {
 
     return (
         <div className="rounded-3xl border p-6 md:p-10 shadow-sm transition-all hover:shadow-md" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-            <h3 className="font-black mb-10 text-xl md:text-2xl" style={{ color: 'var(--text-primary)' }}>{t('totalSummary')}</h3>
+            <h3 className="font-bold mb-10 text-xl md:text-2xl" style={{ color: 'var(--text-primary)' }}>{t('totalSummary')}</h3>
 
             <div className="flex items-center justify-center gap-12">
                 {/* Circle Chart */}
@@ -51,7 +51,7 @@ export default function CircleChart({ segments, total }: CircleChartProps) {
                             cy="50"
                             r={radius}
                             fill="none"
-                            className="stroke-gray-200 dark:stroke-slate-700"
+                            stroke="var(--hover-bg)"
                             strokeWidth="12"
                         />
                         {/* Segment Circles */}
@@ -73,7 +73,7 @@ export default function CircleChart({ segments, total }: CircleChartProps) {
                     </svg>
                     {/* Center Value */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-3xl font-black" style={{ color: 'var(--text-primary)' }}>
+                        <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
                             {total}
                         </span>
                     </div>
@@ -88,7 +88,7 @@ export default function CircleChart({ segments, total }: CircleChartProps) {
                                     className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
                                     style={{ backgroundColor: segment.color }}
                                 />
-                                <span className="text-sm md:text-base font-bold truncate" style={{ color: 'var(--text-secondary)' }}>
+                                <span className="text-sm md:text-base font-semibold truncate" style={{ color: 'var(--text-secondary)' }}>
                                     {segment.label}
                                 </span>
                             </div>
@@ -100,7 +100,7 @@ export default function CircleChart({ segments, total }: CircleChartProps) {
                 </div>
             </div>
 
-            <p className="text-[10px] mt-8 text-center font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-[10px] mt-8 text-center font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                 {t('proportion')}
             </p>
         </div>
